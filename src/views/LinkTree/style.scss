@@ -1,0 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+.link-button {
+  div {
+    width: 50%;
+    height: 56px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1.5px solid #fafafa;
+    border-radius: 100px;
+    transition: 0.3s;
+    overflow: hidden;
+    a {
+      font-family: "Inter";
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 16px;
+      text-align: center;
+      background: none;
+      box-shadow: none;
+      width: 100%;
+      height: 100%;
+      span {
+        display: none;
+      }
+    }
+    a:hover {
+      background-color: transparent;
+      box-shadow: none !important;
+    }
+  }
+  div:hover {
+    a {
+      box-shadow: none;
+    }
+    transform: scale(1.01);
+    filter: none;
+  }
+}
+.css-aabqjr {
+  width: 50%;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 0 !important;
+  border-radius: 16px;
+  overflow: hidden;
+  button {
+    width: 100%;
+    height: 50%;
+    border: none;
+    border-bottom: 1px solid #99969e;
+    color: #1f1b29;
+    cursor: pointer;
+  }
+}
+@media (max-width: 500px) {
+  .link-button {
+    div {
+      width: 70%;
+      height: 46px;
+      a {
+        font-size: 14px;
+      }
+    }
+  }
+}
+@media (max-width: 400px) {
+  .link-button {
+    div {
+      width: 85%;
+      height: 40px;
+      a {
+        font-size: 12px;
+      }
+    }
+  }
+}

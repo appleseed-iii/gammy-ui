@@ -1,0 +1,25 @@
+.gradient {
+  background-image: radial-gradient( at center,
+      rgb(255, 255, 255) 30%, rgba(0, 0, 0, 0) 70%);
+      height: fit-content;
+      padding: 10px;
+      width: 85%;
+  }
+
+  .linkbox {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    padding: 10px;
+    border-radius: 10px;
+    margin: '20px';
+    /* max-width: 750px; */
+  }
+
+  .container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
