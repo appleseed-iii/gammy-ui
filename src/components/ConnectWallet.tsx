@@ -1,4 +1,6 @@
-import { Box, Button, Divider, Toolbar } from "@mui/material";
+import "98.css";
+
+import { Box, Button, Toolbar, Typography } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import SvgIcon from "@mui/material/SvgIcon";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
@@ -64,33 +66,71 @@ function ConnectButton() {
       )}
       <SwipeableDrawer
         PaperProps={{
-          sx: { height: "300px", width: "300px" },
+          sx: { height: "200px", width: "300px", padding: "0", marginBottom: "48px" },
         }}
+        BackdropProps={{ sx: { backgroundColor: "transparent" } }}
         anchor={"bottom"}
         open={openConnectWallet}
         onClose={toggleDrawer}
         onOpen={toggleDrawer}
       >
-        <Box>
-          {isConnected && accountData && (
-            <Button>
-              <div>{accountData.address}</div>
-              <div>Connected to {accountData?.connector?.name}</div>
-            </Button>
-          )}
+        <Box display="flex" sx={{ height: "100%" }}>
+          <Box
+            id="start-title"
+            sx={{
+              flexBasis: "34px",
+              background: "linear-gradient(0deg, #1085D2 0%, #00007B 100%)",
+              width: "34px",
+              height: "99%",
+            }}
+          >
+            <Typography
+              sx={{
+                position: "absolute",
+                bottom: "50px",
+                left: "-44px",
+                transform: "rotate(-90deg)",
+                color: "#fff",
+                fontSize: "22px",
+              }}
+            >
+              Windows 98
+            </Typography>
+          </Box>
+          <Box id="connector-container" display="flex" flexDirection="column" flexGrow="1">
+            {isConnected && accountData && (
+              <Button>
+                <div>{accountData.address}</div>
+                <div>Connected to {accountData?.connector?.name}</div>
+              </Button>
+            )}
 
-          {!isConnected &&
-            connectors.map(connector => (
-              <>
-                <Box key={connector.id} onClick={() => connect(connector)} sx={{ height: "40px" }}>
-                  {connector.name}
-                  {!connector.ready && " (unsupported)"}
+            {!isConnected &&
+              connectors.map(connector => (
+                <Box>
+                  <Box
+                    className="status-bar"
+                    key={connector.id}
+                    onClick={() => connect(connector)}
+                    sx={{ height: "40px", padding: "10px 0 10px 2px" }}
+                  >
+                    <Typography>
+                      {connector.name}
+                      {!connector.ready && " (unsupported)"}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      height: "2px",
+                      borderBottom: "2px groove",
+                      width: "98%",
+                    }}
+                  />
                 </Box>
-                <Divider sx={{ color: "#fff" }} />
-              </>
-            ))}
+              ))}
 
-          {connectError && <div>{connectError?.message ?? "Failed to connect"}</div>}
+            {connectError && <div>{connectError?.message ?? "Failed to connect"}</div>}
+          </Box>
         </Box>
       </SwipeableDrawer>
     </div>

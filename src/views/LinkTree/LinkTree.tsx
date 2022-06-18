@@ -41,7 +41,7 @@ export const LinkTree = (props: boject) => {
             <Box
               component="img"
               sx={{ height: "340px", width: "340px", border: "1px solid #fff" }}
-              alt="The house from the offer."
+              alt="placeholder."
               src="https://bafkreidom2nqno4ra2xlzmtuzsy6fvjplloau6kfl2wm2b3msb2dpvtqpe.ipfs.nftstorage.link/"
             ></Box>
           </Box>
