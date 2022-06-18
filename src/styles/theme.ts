@@ -75,7 +75,7 @@ let theme = createTheme({
     },
     info: { main: "#29b6f6", light: "#4fc3f7", dark: "#0288d1", contrastText: contrastTextColor },
     text: {
-      primary: "#fff",
+      primary: "#000000",
       secondary: "#B2BAC2",
       disabled: "rgba(255, 255, 255, 0.5)",
       // icon: "rgba(255, 255, 255, 0.5)",
@@ -94,8 +94,8 @@ let theme = createTheme({
       selectedOpacity: 0.16,
     },
     background: {
-      default: "#001E3C",
-      paper: "#0A1929",
+      default: "#008080",
+      paper: "#BFBFBF",
     },
     common: {
       black: "#1D1D1D",
@@ -105,7 +105,7 @@ let theme = createTheme({
     divider: "rgba(194, 224, 255, 0.08)",
     tonalOffset: 0.2,
   },
-  shape: { borderRadius: 10 },
+  shape: { borderRadius: 1 },
   spacing: 8,
   zIndex: {
     appBar: 1100,
@@ -122,17 +122,28 @@ let theme = createTheme({
       styleOverrides: {
         root: {
           padding: 32,
+          borderColor: "rgba(247, 247, 247, 0.7);",
+          background: "#BFBFBF",
+          boxShadow:
+            "inset -1px -1px 0px #000000, inset 1px 1px 0px #DBDBDB, inset -2px -2px 0px #808080, inset 2px 2px 0px #FFFFFF",
         },
       },
     },
     MuiButton: {
       styleOverrides: {
         contained: {
-          color: "#fff",
+          color: "#000000",
+          borderColor: "rgba(247, 247, 247, 0.7);",
+          background: "#BFBFBF",
+          boxShadow:
+            "inset -1px -1px 0px #000000, inset 1px 1px 0px #DBDBDB, inset -2px -2px 0px #808080, inset 2px 2px 0px #FFFFFF",
         },
         outlined: {
-          color: "#fff",
-          borderColor: "rgba(247, 247, 247, 0.7);",
+          color: "#000000",
+          borderColor: "#000000",
+          background: "#BFBFBF",
+          boxShadow:
+            "inset -1px -1px 0px #000000, inset 1px 1px 0px #DBDBDB, inset -2px -2px 0px #808080, inset 2px 2px 0px #FFFFFF",
         },
       },
     },
