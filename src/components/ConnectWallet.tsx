@@ -53,12 +53,12 @@ function ConnectButton() {
   return (
     <div>
       {isConnected && accountData ? (
-        <Button variant="outlined" onClick={() => disconnect()}>
+        <Button variant="outlined" onClick={() => disconnect()} sx={{ zIndex: "1200" }}>
           <Windows98 style={{ height: 20, width: 20 }} />
           Disconnect
         </Button>
       ) : (
-        <Button variant="outlined" onClick={toggleDrawer}>
+        <Button variant="outlined" onClick={toggleDrawer} sx={{ zIndex: "1200" }}>
           <Windows98 style={{ height: 20, width: 20 }} />
           &nbsp;
           {"Connect"}
@@ -99,20 +99,63 @@ function ConnectButton() {
           </Box>
           <Box id="connector-container" display="flex" flexDirection="column" flexGrow="1">
             {isConnected && accountData && (
-              <Button>
-                <div>{accountData.address}</div>
-                <div>Connected to {accountData?.connector?.name}</div>
-              </Button>
+              <>
+                <Box
+                  className=""
+                  sx={{
+                    height: "40px",
+                    padding: "10px 0 10px 2px",
+                    "&:hover": {
+                      backgroundColor: "#00007B",
+                      color: "#fff",
+                    },
+                  }}
+                >
+                  <div>
+                    {accountData.address?.substring(0, 6) +
+                      "..." +
+                      accountData.address?.substring(accountData.address?.length, accountData.address?.length - 6)}
+                  </div>
+                </Box>
+                <Box
+                  sx={{
+                    height: "2px",
+                    borderBottom: "2px groove",
+                    width: "98%",
+                  }}
+                />
+                <Box
+                  className=""
+                  sx={{
+                    height: "40px",
+                    padding: "10px 0 10px 2px",
+                    "&:hover": {
+                      backgroundColor: "#00007B",
+                      color: "#fff",
+                    },
+                  }}
+                >
+                  <div>Connected to {accountData?.connector?.name}</div>
+                </Box>
+              </>
             )}
 
             {!isConnected &&
               connectors.map(connector => (
                 <Box>
                   <Box
-                    className="status-bar"
+                    className=""
                     key={connector.id}
                     onClick={() => connect(connector)}
-                    sx={{ height: "40px", padding: "10px 0 10px 2px" }}
+                    sx={{
+                      height: "40px",
+                      padding: "10px 0 10px 2px",
+                      "&:hover": {
+                        backgroundColor: "#00007B",
+                        color: "#fff",
+                      },
+                      cursor: "pointer",
+                    }}
                   >
                     <Typography>
                       {connector.name}
