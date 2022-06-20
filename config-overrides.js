@@ -8,7 +8,7 @@ module.exports = function override(config) {
     https: require.resolve("https-browserify"),
     os: require.resolve("os-browserify/browser"),
     process: require.resolve("process"),
-    "ansi-html-community": require.resolve("ansi-html"),
+    "ansi-html-community": require.resolve("ansi-html-community"),
   });
   config.resolve.fallback = fallback;
   config.plugins = (config.plugins || []).concat([

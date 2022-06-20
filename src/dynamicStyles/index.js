@@ -1,9 +1,6 @@
-import background1 from "../assets/imges/bacground1.svg";
-
 const dynamicStyles = {
   appStyle1: {
     bacgroundStyle: {
-      backgroundImage: `url(${background1})`,
       backgroundColor: "black",
     },
     ButtonStyle: { background: "transparent", border: "1px solid #FFFFFF" },

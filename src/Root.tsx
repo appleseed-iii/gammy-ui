@@ -1,67 +1,53 @@
 import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
-import { providers } from "ethers";
 import { FC } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { BrowserRouter } from "react-router-dom";
-import { WagmiProvider } from "wagmi";
-import { createWagmiClient } from "wagmi";
-// import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
+import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { alchemyProvider } from "wagmi/providers/alchemy";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { publicProvider } from "wagmi/providers/public";
 
 import App from "./App";
-import { availableChains } from "./constants";
 import theme from "./styles/theme";
 
-// const connectors = [
-//   new InjectedConnector({ chains: defaultChains }),
-//   new WalletConnectConnector({
-//     chains: defaultChains,
-//     options: {
-//       qrcode: true,
-//     },
-//   }),
-// ];
+export const { chains, provider } = configureChains(
+  [chain.mainnet, chain.rinkeby],
+  [
+    alchemyProvider({ alchemyId: "wnTln1NkDFE-MFzyzWXVJVdVvP_U9XtD" }),
+    jsonRpcProvider({ rpc: chain => ({ http: chain.rpcUrls.default }) }),
+    publicProvider(),
+  ],
+);
 
-// const defaultChain = chain.rinkeby;
+const needsInjectedWalletFallback =
+  typeof window !== "undefined" && window.ethereum && !window.ethereum.isMetaMask && !window.ethereum.isCoinbaseWallet;
 
-// type ProviderConfig = { chainId?: number; connector?: Connector };
-// const isChainSupported = (chainId?: number) => chains.some(x => x.id === chainId);
-
-const wagmiClient = createWagmiClient({
+const wagmiClient = createClient({
   autoConnect: true,
   connectors: [
-    new InjectedConnector({ chains: availableChains }),
+    new MetaMaskConnector({ chains, options: { shimDisconnect: true } }),
+    new CoinbaseWalletConnector({
+      chains,
+      options: {
+        appName: "Gammy Grams",
+        jsonRpcUrl: "https://eth-mainnet.alchemyapi.io/v2/wnTln1NkDFE-MFzyzWXVJVdVvP_U9XtD",
+      },
+    }),
     new WalletConnectConnector({
-      chains: availableChains,
+      chains,
       options: {
         qrcode: true,
       },
     }),
+    ...(needsInjectedWalletFallback ? [new InjectedConnector({ chains, options: { shimDisconnect: true } })] : []),
   ],
-  // connectors(config) {
-  //   return [
-  //     new InjectedConnector({ chains: availableChains }),
-  //     // new CoinbaseWalletConnector({
-  //     //   options: {
-  //     //     appName: "wagmi",
-  //     //     chainId: config.chainId,
-  //     //   },
-  //     // }),
-  //     new WalletConnectConnector({
-  //       chains: availableChains,
-  //       options: {
-  //         qrcode: true,
-  //       },
-  //     }),
-  //   ];
-  // },
-  provider(config) {
-    console.log("provider config", config);
-    return new providers.AlchemyProvider(config.chainId || 4, "wnTln1NkDFE-MFzyzWXVJVdVvP_U9XtD");
-  },
+  provider,
 });
 
 const queryClient = new QueryClient();
@@ -70,7 +56,7 @@ const Root: FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       {process.env.NODE_ENV === "test" && <ReactQueryDevtools />}
-      <WagmiProvider client={wagmiClient}>
+      <WagmiConfig client={wagmiClient}>
         <BrowserRouter>
           <ThemeProvider theme={theme}>
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
@@ -78,7 +64,7 @@ const Root: FC = () => {
             <App />
           </ThemeProvider>
         </BrowserRouter>
-      </WagmiProvider>
+      </WagmiConfig>
     </QueryClientProvider>
   );
 };
