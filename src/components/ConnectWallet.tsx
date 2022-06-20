@@ -58,7 +58,7 @@ export default function ConnectWallet() {
   );
 }
 
-function ConnectButton() {
+export function ConnectButton() {
   // const [{ data: connectData, error: connectError }, connect] = useConnect();
   const {
     activeConnector,

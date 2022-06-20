@@ -36,3 +36,9 @@ export const addresses: IAddresses = {
   //   LINK_TREE: "",
   // },
 };
+
+export const GOHM_ADDRESSES = {
+  [NetworkId.TESTNET_RINKEBY]: "0xcF2D6893A1CB459fD6B48dC9C41c6110B968611E",
+  // [NetworkId.TESTNET_RINKEBY]: "0x0d980FF90cc86668B16e52BdD6522eBe408001D2",
+  [NetworkId.MAINNET]: "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f",
+};

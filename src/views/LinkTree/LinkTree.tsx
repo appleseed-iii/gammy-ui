@@ -3,7 +3,10 @@ import "98.css";
 
 import { Box, Button, Paper, SvgIcon, Typography } from "@mui/material";
 import { useState } from "react";
+import { ConnectButton } from "src/components/ConnectWallet";
 import { Groove } from "src/components/Groove";
+import { UserBalanceRow } from "src/components/UserBalanceRow";
+import { useAccount, useConnect } from "wagmi";
 
 import { ReactComponent as ethImg } from "../../assets/eth.svg";
 import { ReactComponent as gOHMImg } from "../../assets/gOHM.svg";
@@ -11,18 +14,10 @@ import { ReactComponent as gOHMImg } from "../../assets/gOHM.svg";
 
 // import { ILink, useGetLinksLT } from "./hooks/useLinkTree";
 
-type boject = {
-  ButtonStyle: {
-    background: string;
-    border: string;
-  };
-  textStyle: {
-    color: string;
-  };
-  userImg: string;
-};
-
 export const LinkTree = () => {
+  const { isConnected } = useConnect();
+  const { data: accountData } = useAccount();
+
   const [currency, setCurrency] = useState("ETH");
   const newLocal = "linear-gradient(270deg, #1085D2 0%, #00007B 100%)";
 
@@ -45,7 +40,7 @@ export const LinkTree = () => {
           <Typography sx={{ color: "#fff" }}>Buy Now</Typography>
         </Box>
         <Box m={2} display="flex" flexDirection="column">
-          <Box>
+          <Box display="flex" justifyContent="center">
             <Box
               component="img"
               sx={{ height: "340px", width: "340px", border: "1px solid #fff" }}
@@ -74,28 +69,26 @@ export const LinkTree = () => {
               </Box>
             </Box>
           </Box>
-          <Box id="user-balance-row" display="flex" flexDirection="row" justifyContent="space-between">
-            <Typography>Your Balance</Typography>
-            <Box display="flex" sx={{ alignItems: "center" }}>
-              {currency === "ETH" ? (
-                <SvgIcon component={ethImg} viewBox="0 0 20 20" style={{ height: "16px", width: "16px" }} />
-              ) : (
-                <SvgIcon component={gOHMImg} viewBox="0 0 32 32" style={{ height: "16px", width: "24px" }} />
-              )}
-              <Box display="flex" sx={{ fontSize: "20px" }}>
-                <Typography sx={{ marginRight: "3px " }}>0.01</Typography>
-                <Typography sx={{ marginRight: "3px " }}>{currency}</Typography>
+          {isConnected && accountData?.address ? (
+            <>
+              <UserBalanceRow currency={currency} address={accountData.address} />
+              <Box id="buy-row" display="flex" justifyContent="center" sx={{ margin: "10px" }}>
+                <Button variant="outlined" sx={{ width: "75%" }}>
+                  Mint!
+                </Button>
               </Box>
+            </>
+          ) : (
+            <Box id="buy-row" display="flex" justifyContent="center" sx={{ margin: "10px" }}>
+              <ConnectButton />
             </Box>
-          </Box>
-          <Box id="buy-row" display="flex" justifyContent="center" sx={{ margin: "10px" }}>
-            <Button variant="outlined" sx={{ width: "75%" }}>
-              Mint!
-            </Button>
-          </Box>
+          )}
           <Box id="nft-details-row" display="flex" flexDirection="row" justifyContent="space-between">
-            <blockquote style={{ background: "#dfdfdf", padding: "1em", margin: "0.2em" }}>
-              Each Gammy Gram is an actual email from Gammy. She just wants you to make it, anon.
+            <blockquote style={{ maxWidth: "500px", background: "#dfdfdf", padding: "1em", margin: "0.2em" }}>
+              Each Gammy Gram is an actual email from Gammy or sometimes your other boomer family members. They just
+              want you to make it, anon.
+              <br />
+              Please forgive their spelling and grammar errors... they're boomers.
             </blockquote>
           </Box>
           <Groove sx={{ margin: "10px" }} />
