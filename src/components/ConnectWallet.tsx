@@ -5,11 +5,16 @@ import AppBar from "@mui/material/AppBar";
 import SvgIcon from "@mui/material/SvgIcon";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import { useState } from "react";
+import { abbreviatedAddress } from "src/helpers";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 
 import { ReactComponent as Windows98 } from "../assets/windows-98-start.svg";
+import { Groove } from "./Groove";
 
 export default function ConnectWallet() {
+  const { isConnected } = useConnect();
+  const { data: accountData } = useAccount();
+
   return (
     <>
       <AppBar
@@ -22,6 +27,31 @@ export default function ConnectWallet() {
           <Box>
             <ConnectButton />
           </Box>
+          <Groove
+            sx={{ marginLeft: "4px", borderLeft: "2px groove", borderBottom: "none", height: "40px", width: "3px" }}
+          />
+          <Groove
+            sx={{ marginLeft: "2px", borderLeft: "4px ridge", borderBottom: "none", height: "32px", width: "4px" }}
+          />
+          {isConnected && (
+            <Typography
+              sx={{
+                paddingLeft: "6px",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                letterSpacing: "0.02857em",
+                textTransform: "uppercase",
+              }}
+            >
+              {abbreviatedAddress(accountData?.address)}
+            </Typography>
+          )}
+          <Groove
+            sx={{ marginLeft: "4px", borderLeft: "2px groove", borderBottom: "none", height: "40px", width: "3px" }}
+          />
+          <Groove
+            sx={{ marginLeft: "2px", borderLeft: "4px ridge", borderBottom: "none", height: "32px", width: "4px" }}
+          />
         </Toolbar>
       </AppBar>
     </>
@@ -111,19 +141,9 @@ function ConnectButton() {
                     },
                   }}
                 >
-                  <div>
-                    {accountData.address?.substring(0, 6) +
-                      "..." +
-                      accountData.address?.substring(accountData.address?.length, accountData.address?.length - 6)}
-                  </div>
+                  <div>{abbreviatedAddress(accountData?.address)}</div>
                 </Box>
-                <Box
-                  sx={{
-                    height: "2px",
-                    borderBottom: "2px groove",
-                    width: "98%",
-                  }}
-                />
+                <Groove sx={{ borderBottom: "2px groove" }} />
                 <Box
                   className=""
                   sx={{
@@ -162,13 +182,7 @@ function ConnectButton() {
                       {!connector.ready && " (unsupported)"}
                     </Typography>
                   </Box>
-                  <Box
-                    sx={{
-                      height: "2px",
-                      borderBottom: "2px groove",
-                      width: "98%",
-                    }}
-                  />
+                  <Groove sx={{ borderBottom: "2px groove" }} />
                 </Box>
               ))}
 

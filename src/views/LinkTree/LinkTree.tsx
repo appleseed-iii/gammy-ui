@@ -1,9 +1,15 @@
 import "./style.scss";
+import "98.css";
 
-import { Box, Button, Paper, Skeleton, Typography } from "@mui/material";
-import { UseQueryResult } from "react-query";
+import { Box, Button, Paper, SvgIcon, Typography } from "@mui/material";
+import { useState } from "react";
+import { Groove } from "src/components/Groove";
 
-import { ILink, useGetLinksLT } from "./hooks/useLinkTree";
+import { ReactComponent as ethImg } from "../../assets/eth.svg";
+import { ReactComponent as gOHMImg } from "../../assets/gOHM.svg";
+// import { UseQueryResult } from "react-query";
+
+// import { ILink, useGetLinksLT } from "./hooks/useLinkTree";
 
 type boject = {
   ButtonStyle: {
@@ -16,13 +22,15 @@ type boject = {
   userImg: string;
 };
 
-export const LinkTree = (props: boject) => {
-  const buttontSyle = props.ButtonStyle;
-  const linkStyle = props.textStyle;
-  const userImg = props.userImg;
-  const linksArray = useGetLinksLT();
-  let linksList: JSX.Element[] = [<PlaceHolder />];
+export const LinkTree = () => {
+  const [currency, setCurrency] = useState("ETH");
   const newLocal = "linear-gradient(270deg, #1085D2 0%, #00007B 100%)";
+
+  const changeCurrency = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log("changed to", event.target.value);
+    setCurrency(event.target.value);
+  };
+
   return (
     <Box display="flex" flexDirection="column" justifyContent="center">
       <Box sx={{ height: "10px" }} />
@@ -43,54 +51,62 @@ export const LinkTree = (props: boject) => {
               sx={{ height: "340px", width: "340px", border: "1px solid #fff" }}
               alt="placeholder."
               src="https://bafkreidom2nqno4ra2xlzmtuzsy6fvjplloau6kfl2wm2b3msb2dpvtqpe.ipfs.nftstorage.link/"
-            ></Box>
+            />
           </Box>
-          <Box id="bottom-row">
-            <Button variant="outlined">Buy!</Button>
+          <Box id="nft-mint-supply-row" display="flex" flexDirection="row" justifyContent="space-between">
+            <Typography>Remaining / Supply</Typography>
+            <Typography>10,000 / 10,000</Typography>
+          </Box>
+          <Box id="nft-price-row" display="flex" flexDirection="row" justifyContent="space-between">
+            <Typography>Price</Typography>
+            <Box display="flex" sx={{ alignItems: "center" }}>
+              {currency === "ETH" ? (
+                <SvgIcon component={ethImg} viewBox="0 0 20 20" style={{ height: "16px", width: "16px" }} />
+              ) : (
+                <SvgIcon component={gOHMImg} viewBox="0 0 32 32" style={{ height: "16px", width: "24px" }} />
+              )}
+              <Box display="flex" sx={{ fontSize: "20px" }}>
+                <Typography sx={{ marginRight: "3px " }}>0.01</Typography>
+                <select onChange={e => changeCurrency(e)}>
+                  <option>ETH</option>
+                  <option>gOHM</option>
+                </select>
+              </Box>
+            </Box>
+          </Box>
+          <Box id="user-balance-row" display="flex" flexDirection="row" justifyContent="space-between">
+            <Typography>Your Balance</Typography>
+            <Box display="flex" sx={{ alignItems: "center" }}>
+              {currency === "ETH" ? (
+                <SvgIcon component={ethImg} viewBox="0 0 20 20" style={{ height: "16px", width: "16px" }} />
+              ) : (
+                <SvgIcon component={gOHMImg} viewBox="0 0 32 32" style={{ height: "16px", width: "24px" }} />
+              )}
+              <Box display="flex" sx={{ fontSize: "20px" }}>
+                <Typography sx={{ marginRight: "3px " }}>0.01</Typography>
+                <Typography sx={{ marginRight: "3px " }}>{currency}</Typography>
+              </Box>
+            </Box>
+          </Box>
+          <Box id="buy-row" display="flex" justifyContent="center" sx={{ margin: "10px" }}>
+            <Button variant="outlined" sx={{ width: "75%" }}>
+              Mint!
+            </Button>
+          </Box>
+          <Box id="nft-details-row" display="flex" flexDirection="row" justifyContent="space-between">
+            <blockquote style={{ background: "#dfdfdf", padding: "1em", margin: "0.2em" }}>
+              Each Gammy Gram is an actual email from Gammy. She just wants you to make it, anon.
+            </blockquote>
+          </Box>
+          <Groove sx={{ margin: "10px" }} />
+          <Box id="faq-row" display="flex" justifyContent="center" sx={{ marginTop: "10px" }}>
+            <Button variant="outlined" sx={{ width: "50%" }}>
+              Question?
+            </Button>
           </Box>
         </Box>
       </Paper>
       <Box sx={{ height: "60px" }} />
-    </Box>
-  );
-  if (linksArray.length > 0) {
-    linksList = linksArray.map((link: UseQueryResult<ILink, Error>) => {
-      return (
-        <>
-          {!link.isLoading && link.isSuccess ? (
-            <Box style={buttontSyle} m={2}>
-              <Button style={linkStyle} variant="contained" href={link.data?.url as string}>
-                {link.data?.display as string}
-              </Button>
-            </Box>
-          ) : (
-            <PlaceHolder />
-          )}
-        </>
-      );
-    });
-  }
-  return (
-    <div>
-      <div>
-        <img src={userImg} alt="" />
-        <p>@marystuart</p>
-      </div>
-      <Box className="link-button" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-        {linksList}
-      </Box>
-    </div>
-  );
-};
-
-const PlaceHolder = () => {
-  return (
-    <Box m={2}>
-      <Skeleton>
-        <Button variant="contained" href={""}>
-          placeholder
-        </Button>
-      </Skeleton>
     </Box>
   );
 };
