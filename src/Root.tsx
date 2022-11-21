@@ -1,8 +1,8 @@
 import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { FC } from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { BrowserRouter } from "react-router-dom";
 import App from "src/App";
 import theme from "src/styles/theme";
@@ -16,10 +16,13 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
 
 export const { chains, provider } = configureChains(
-  [chain.mainnet, chain.rinkeby],
   [
-    alchemyProvider({ alchemyId: "wnTln1NkDFE-MFzyzWXVJVdVvP_U9XtD" }),
+    { ...chain.mainnet, rpcUrls: { default: "https://rpc.ankr.com/eth" } },
+    { ...chain.goerli, rpcUrls: { default: "https://rpc.ankr.com/eth_goerli" } },
+  ],
+  [
     jsonRpcProvider({ rpc: chain => ({ http: chain.rpcUrls.default }) }),
+    alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
     publicProvider(),
   ],
 );
@@ -35,7 +38,7 @@ const wagmiClient = createClient({
       chains,
       options: {
         appName: "Gammy Grams",
-        jsonRpcUrl: "https://eth-mainnet.alchemyapi.io/v2/wnTln1NkDFE-MFzyzWXVJVdVvP_U9XtD",
+        jsonRpcUrl: `https://eth-mainnet.alchemyapi.io/v2/${import.meta.env.VITE_ALCHEMY_ID}`,
       },
     }),
     new WalletConnectConnector({
@@ -54,7 +57,6 @@ const queryClient = new QueryClient();
 const Root: FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      {process.env.NODE_ENV === "test" && <ReactQueryDevtools />}
       <WagmiConfig client={wagmiClient}>
         <BrowserRouter>
           <ThemeProvider theme={theme}>
@@ -64,6 +66,7 @@ const Root: FC = () => {
           </ThemeProvider>
         </BrowserRouter>
       </WagmiConfig>
+      <ReactQueryDevtools initialIsOpen={false} position={`top-right`} panelPosition={`right`} />
     </QueryClientProvider>
   );
 };

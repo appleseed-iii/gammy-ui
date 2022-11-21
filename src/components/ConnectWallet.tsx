@@ -5,15 +5,14 @@ import AppBar from "@mui/material/AppBar";
 import SvgIcon from "@mui/material/SvgIcon";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import { useState } from "react";
+import { ReactComponent as Windows98 } from "src/assets/windows-98-start.svg";
+import { Groove } from "src/components/Groove";
 import { abbreviatedAddress } from "src/helpers";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
-
-import { ReactComponent as Windows98 } from "../assets/windows-98-start.svg";
-import { Groove } from "./Groove";
+import { WalletWarningTC } from "src/styles/theme";
+import { Connector, useAccount, useConnect, useDisconnect } from "wagmi";
 
 export default function ConnectWallet() {
-  const { isConnected } = useConnect();
-  const { data: accountData } = useAccount();
+  const { address, isConnected } = useAccount();
 
   return (
     <>
@@ -43,7 +42,7 @@ export default function ConnectWallet() {
                 textTransform: "uppercase",
               }}
             >
-              {abbreviatedAddress(accountData?.address)}
+              {abbreviatedAddress(address)}
             </Typography>
           )}
           <Groove
@@ -60,29 +59,27 @@ export default function ConnectWallet() {
 
 export function ConnectButton() {
   // const [{ data: connectData, error: connectError }, connect] = useConnect();
-  const {
-    activeConnector,
-    connect,
-    connectors,
-    error: connectError,
-    isConnecting,
-    isConnected,
-    pendingConnector,
-  } = useConnect();
-  const { data: accountData } = useAccount();
+  const { connect, connectors, error: connectError, isLoading, pendingConnector } = useConnect();
+  const { address, isConnected, connector: activeConnector } = useAccount();
   const { disconnect } = useDisconnect();
+  const [hideWarning, setHideWarning] = useState(false);
 
   const [openConnectWallet, setOpenConnectWallet] = useState(false);
   // const handleOpenConnectWallet = () => setOpenConnectWallet(true);
   // const handleCloseConnectWallet = () => setOpenConnectWallet(false);
   const toggleDrawer = () => {
     console.log("toggleDrawer", !openConnectWallet);
+    setHideWarning(true);
     setOpenConnectWallet(!openConnectWallet);
+  };
+  const handleConnectBtn = (connector: Connector<any, any, any>) => {
+    setHideWarning(false);
+    connect({ connector });
   };
 
   return (
-    <div>
-      {isConnected && accountData ? (
+    <>
+      {isConnected && address ? (
         <Button variant="outlined" onClick={() => disconnect()} sx={{ zIndex: "1200" }}>
           <Windows98 style={{ height: 20, width: 20 }} />
           Disconnect
@@ -99,6 +96,7 @@ export function ConnectButton() {
           sx: { height: "200px", width: "300px", padding: "0", marginBottom: "48px" },
         }}
         BackdropProps={{ sx: { backgroundColor: "transparent" } }}
+        swipeAreaWidth={0}
         anchor={"bottom"}
         open={openConnectWallet}
         onClose={toggleDrawer}
@@ -128,7 +126,7 @@ export function ConnectButton() {
             </Typography>
           </Box>
           <Box id="connector-container" display="flex" flexDirection="column" flexGrow="1">
-            {isConnected && accountData && (
+            {isConnected && address && (
               <>
                 <Box
                   className=""
@@ -141,7 +139,7 @@ export function ConnectButton() {
                     },
                   }}
                 >
-                  <div>{abbreviatedAddress(accountData?.address)}</div>
+                  <div>{abbreviatedAddress(address)}</div>
                 </Box>
                 <Groove sx={{ borderBottom: "2px groove" }} />
                 <Box
@@ -155,18 +153,18 @@ export function ConnectButton() {
                     },
                   }}
                 >
-                  <div>Connected to {accountData?.connector?.name}</div>
+                  <div>Connected to {activeConnector?.name}</div>
                 </Box>
               </>
             )}
 
             {!isConnected &&
               connectors.map(connector => (
-                <Box>
+                <Box onClick={() => handleConnectBtn(connector)}>
                   <Box
                     className=""
+                    // disabled={!connector.ready}
                     key={connector.id}
-                    onClick={() => connect(connector)}
                     sx={{
                       height: "40px",
                       padding: "10px 0 10px 2px",
@@ -179,6 +177,7 @@ export function ConnectButton() {
                   >
                     <Typography>
                       {connector.name}
+                      {isLoading && pendingConnector?.id === connector.id && " (connecting)"}
                       {!connector.ready && " (unsupported)"}
                     </Typography>
                   </Box>
@@ -186,11 +185,13 @@ export function ConnectButton() {
                 </Box>
               ))}
 
-            {connectError && <div>{connectError?.message ?? "Failed to connect"}</div>}
+            {connectError && !hideWarning && (
+              <WalletWarningTC>{connectError?.message ?? "Failed to connect"}</WalletWarningTC>
+            )}
           </Box>
         </Box>
       </SwipeableDrawer>
-    </div>
+    </>
   );
 }
 
