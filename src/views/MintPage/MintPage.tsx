@@ -75,8 +75,10 @@ export const MintPage = () => {
               </Box>
             </>
           ) : (
-            <Box id="buy-row" display="flex" justifyContent="center" sx={{ margin: "10px" }}>
-              <ConnectButton />
+            <Box id="buy-row" display="flex" justifyContent="center" sx={{ margin: "10px", minHeight: "48px" }}>
+              <Box>
+                <ConnectButton />
+              </Box>
             </Box>
           )}
           <Box id="nft-details-row" display="flex" flexDirection="row" justifyContent="space-between">

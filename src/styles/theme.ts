@@ -68,10 +68,12 @@ let theme = createTheme({
       700: "#AB6800",
       800: "#8C5800",
       900: "#5A3600",
-      contrastText: contrastTextColor,
+      contrastText: "#eb0c0c",
       dark: "#AB6800",
       light: "#FFDC48",
       main: "#DEA500",
+      // ketchup: "#eb0c0c",
+      // mustard: "#feff00",
     },
     info: { main: "#29b6f6", light: "#4fc3f7", dark: "#0288d1", contrastText: contrastTextColor },
     text: {
@@ -108,7 +110,7 @@ let theme = createTheme({
   shape: { borderRadius: 1 },
   spacing: 8,
   zIndex: {
-    appBar: 1100,
+    appBar: 1201,
     drawer: 1200,
     fab: 1050,
     mobileStepper: 1000,
@@ -173,6 +175,11 @@ export const FormRowThemeComponent = styled("div")(({ theme }) => ({
 export const FormInputThemeComponent = styled("span")(({ theme }) => ({
   padding: theme.spacing(1),
   margin: theme.spacing(1),
+}));
+
+export const WalletWarningTC = styled("div")(({ theme }) => ({
+  color: theme.palette.warning.contrastText,
+  padding: theme.spacing(1),
 }));
 
 export default theme;
