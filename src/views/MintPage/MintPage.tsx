@@ -90,10 +90,10 @@ export const MintPage = () => {
             </blockquote>
           </Box>
           <Groove sx={{ margin: "10px" }} />
-          <Box id="faq-row" display="flex" justifyContent="center" sx={{ marginTop: "10px" }}>
-            <Button variant="outlined" sx={{ width: "50%" }}>
-              Question?
-            </Button>
+          <Box id="faq-row" display="flex" justifyContent="center" sx={{ marginTop: "10px", minHeight: "48px" }}>
+            <Box>
+              <Button variant="outlined">Question?</Button>
+            </Box>
           </Box>
         </Box>
       </Paper>
