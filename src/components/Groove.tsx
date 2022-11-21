@@ -25,3 +25,23 @@ export const Groove = ({ sx = [], children }: GrooveProps) => {
     </Box>
   );
 };
+
+export const StartBarDoubleGroove = () => {
+  return (
+    <>
+      <Groove
+        sx={{ marginLeft: "4px", borderLeft: "2px groove", borderBottom: "none", height: "40px", width: "3px" }}
+      />
+      <Groove
+        sx={{
+          marginLeft: "2px",
+          marginRight: "4px",
+          borderLeft: "4px ridge",
+          borderBottom: "none",
+          height: "32px",
+          width: "4px",
+        }}
+      />
+    </>
+  );
+};

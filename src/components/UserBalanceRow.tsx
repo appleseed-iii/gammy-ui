@@ -1,32 +1,24 @@
 import { Box, Skeleton, SvgIcon, Typography } from "@mui/material";
+import { ReactComponent as ethImg } from "src/assets/eth.svg";
+import { ReactComponent as gOHMImg } from "src/assets/gOHM.svg";
 import { GOHM_ADDRESSES } from "src/constants";
 import { trimNumberString } from "src/helpers";
 import { useBalance, useNetwork } from "wagmi";
 
-import { ReactComponent as ethImg } from "../assets/eth.svg";
-import { ReactComponent as gOHMImg } from "../assets/gOHM.svg";
-
-export const UserBalanceRow = ({ address, currency }: { address: string; currency: string }) => {
-  const { activeChain = { id: 1, unsupported: true } } = useNetwork();
+export const UserBalanceRow = ({
+  address,
+  currency,
+  typographyStyles,
+}: {
+  address: string;
+  currency: string;
+  typographyStyles?: any;
+}) => {
   const currencyIsEth = currency === "ETH";
-  const ethBalance = useBalance({
-    addressOrName: address,
-    cacheTime: 200_000,
-    enabled: currencyIsEth,
-  });
-  const gOHMBalance = useBalance({
-    addressOrName: address,
-    token: GOHM_ADDRESSES[activeChain.id as keyof typeof GOHM_ADDRESSES],
-    cacheTime: 200_000,
-    enabled: !currencyIsEth && !activeChain.unsupported,
-    chainId: activeChain.id,
-  });
-
-  const isLoading = ethBalance.isLoading || gOHMBalance.isLoading;
 
   return (
-    <Box id="user-balance-row" display="flex" flexDirection="row" justifyContent="space-between">
-      <Typography>Your Balance</Typography>
+    <Box className="user-balance-row" display="flex" flexDirection="row" justifyContent="space-between">
+      <Typography sx={typographyStyles}>Your Balance</Typography>
       <Box display="flex" sx={{ alignItems: "center" }}>
         {currencyIsEth ? (
           <SvgIcon component={ethImg} viewBox="0 0 20 20" style={{ height: "16px", width: "16px" }} />
@@ -34,18 +26,51 @@ export const UserBalanceRow = ({ address, currency }: { address: string; currenc
           <SvgIcon component={gOHMImg} viewBox="0 0 32 32" style={{ height: "16px", width: "24px" }} />
         )}
         <Box display="flex" sx={{ fontSize: "20px" }}>
-          <Typography sx={{ marginRight: "3px " }}>
-            {isLoading ? (
-              <Skeleton />
-            ) : currencyIsEth ? (
-              trimNumberString(ethBalance.data?.formatted, 2)
-            ) : (
-              trimNumberString(gOHMBalance.data?.formatted, 2)
-            )}
-          </Typography>
-          <Typography sx={{ marginRight: "3px " }}>{currency}</Typography>
+          <UserBalanceText address={address} currency={currency} />
         </Box>
       </Box>
     </Box>
+  );
+};
+
+export const UserBalanceText = ({
+  address,
+  currency,
+  typographyStyles,
+}: {
+  address: string;
+  currency: string;
+  typographyStyles?: any;
+}) => {
+  const currencyIsEth = currency === "ETH";
+
+  const { chain } = useNetwork();
+  const ethBalance = useBalance({
+    address: address as `0x${string}` | undefined,
+    cacheTime: 200_000,
+    enabled: currencyIsEth,
+  });
+  const gOHMBalance = useBalance({
+    address: address as `0x${string}` | undefined,
+    token: GOHM_ADDRESSES[chain?.id as keyof typeof GOHM_ADDRESSES] as `0x${string}` | undefined,
+    cacheTime: 200_000,
+    enabled: !currencyIsEth && !chain?.unsupported && !!GOHM_ADDRESSES[chain?.id as keyof typeof GOHM_ADDRESSES],
+    chainId: chain?.id,
+  });
+
+  const isLoading = ethBalance.isLoading || gOHMBalance.isLoading;
+  return (
+    <>
+      <Typography sx={{ ...typographyStyles, marginRight: "3px " }}>
+        {isLoading ? (
+          <Skeleton />
+        ) : currencyIsEth ? (
+          trimNumberString(ethBalance.data?.formatted, 2)
+        ) : (
+          trimNumberString(gOHMBalance.data?.formatted, 2)
+        )}
+      </Typography>
+      <Typography sx={{ ...typographyStyles, marginRight: "3px " }}>{currency}</Typography>
+    </>
   );
 };

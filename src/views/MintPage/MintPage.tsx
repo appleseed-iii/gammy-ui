@@ -8,11 +8,10 @@ import { ReactComponent as gOHMImg } from "src/assets/gOHM.svg";
 import { ConnectButton } from "src/components/ConnectWallet";
 import { Groove } from "src/components/Groove";
 import { UserBalanceRow } from "src/components/UserBalanceRow";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount } from "wagmi";
 
 export const MintPage = () => {
-  const { isConnected } = useConnect();
-  const { data: accountData } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [currency, setCurrency] = useState("ETH");
   const newLocal = "linear-gradient(270deg, #1085D2 0%, #00007B 100%)";
@@ -65,9 +64,9 @@ export const MintPage = () => {
               </Box>
             </Box>
           </Box>
-          {isConnected && accountData?.address ? (
+          {isConnected && !!address ? (
             <>
-              <UserBalanceRow currency={currency} address={accountData.address} />
+              <UserBalanceRow currency={currency} address={address} />
               <Box id="buy-row" display="flex" justifyContent="center" sx={{ margin: "10px" }}>
                 <Button variant="outlined" sx={{ width: "75%" }}>
                   Mint!
@@ -90,10 +89,10 @@ export const MintPage = () => {
             </blockquote>
           </Box>
           <Groove sx={{ margin: "10px" }} />
-          <Box id="faq-row" display="flex" justifyContent="center" sx={{ marginTop: "10px" }}>
-            <Button variant="outlined" sx={{ width: "50%" }}>
-              Question?
-            </Button>
+          <Box id="faq-row" display="flex" justifyContent="center" sx={{ marginTop: "10px", minHeight: "48px" }}>
+            <Box>
+              <Button variant="outlined">Question?</Button>
+            </Box>
           </Box>
         </Box>
       </Paper>

@@ -6,7 +6,8 @@ import SvgIcon from "@mui/material/SvgIcon";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import { useState } from "react";
 import { ReactComponent as Windows98 } from "src/assets/windows-98-start.svg";
-import { Groove } from "src/components/Groove";
+import { Groove, StartBarDoubleGroove } from "src/components/Groove";
+import { UserBalanceText } from "src/components/UserBalanceRow";
 import { abbreviatedAddress } from "src/helpers";
 import { ConnectorRowTC, WalletWarningTC } from "src/styles/theme";
 import { Connector, useAccount, useConnect, useDisconnect } from "wagmi";
@@ -26,31 +27,34 @@ export default function ConnectWallet() {
           <Box>
             <ConnectButton />
           </Box>
-          <Groove
-            sx={{ marginLeft: "4px", borderLeft: "2px groove", borderBottom: "none", height: "40px", width: "3px" }}
-          />
-          <Groove
-            sx={{ marginLeft: "2px", borderLeft: "4px ridge", borderBottom: "none", height: "32px", width: "4px" }}
-          />
+          <StartBarDoubleGroove />
           {isConnected && (
-            <Typography
-              sx={{
-                paddingLeft: "6px",
-                fontSize: "0.875rem",
-                fontWeight: "500",
-                letterSpacing: "0.02857em",
-                textTransform: "uppercase",
-              }}
-            >
-              {abbreviatedAddress(address)}
-            </Typography>
+            <>
+              <Typography
+                sx={{
+                  paddingLeft: "6px",
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  letterSpacing: "0.02857em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {abbreviatedAddress(address)}
+              </Typography>
+              <StartBarDoubleGroove />
+              <UserBalanceText
+                currency={"ETH"}
+                address={address as string}
+                typographyStyles={{
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  letterSpacing: "0.02857em",
+                  textTransform: "uppercase",
+                }}
+              />
+            </>
           )}
-          <Groove
-            sx={{ marginLeft: "4px", borderLeft: "2px groove", borderBottom: "none", height: "40px", width: "3px" }}
-          />
-          <Groove
-            sx={{ marginLeft: "2px", borderLeft: "4px ridge", borderBottom: "none", height: "32px", width: "4px" }}
-          />
+          <StartBarDoubleGroove />
         </Toolbar>
       </AppBar>
     </>
