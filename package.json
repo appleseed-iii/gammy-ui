@@ -8,38 +8,25 @@
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.6.2",
     "@mui/material": "^5.6.1",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^13.0.0",
-    "@testing-library/user-event": "^13.2.1",
+    "@tanstack/react-query": "^4.16.1",
     "ethers": "^5.6.4",
-    "https-browserify": "^1.0.0",
-    "os-browserify": "^0.3.0",
-    "process": "^0.11.10",
     "react": "^18.0.0",
-    "react-app-rewired": "^2.2.1",
     "react-dom": "^18.0.0",
     "react-hook-form": "^7.30.0",
     "react-query": "^3.38.0",
     "react-router-dom": "6",
-    "react-scripts": "5.0.1",
     "sass": "^1.51.0",
-    "stream-http": "^3.2.0",
     "wagmi": "^0.4.12",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "start": "GENERATE_SOURCEMAP=false react-app-rewired start",
-    "build": "GENERATE_SOURCEMAP=false react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-app-rewired eject",
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
     "typechain:build": "yarn run typechain --target ethers-v5 --out-dir src/typechain src/abi/*.json src/abi/**/*.json",
-    "postinstall": "yarn typechain:build"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "postinstall": "yarn typechain:build",
+    "lint": "eslint --config ./.eslintrc.cjs ./src/ --ext .jsx,.js,.tsx,.ts",
+    "lint:fix": "prettier --write ./src/ & yarn lint --fix"
   },
   "browserslist": {
     "production": [
@@ -54,22 +41,45 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.18.5",
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
+    "@tanstack/react-query-devtools": "^4.16.1",
     "@typechain/ethers-v5": "^10.0.0",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
+    "@vitejs/plugin-react": "^2.2.0",
     "eslint": "^8.13.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-babel": "^5.3.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-no-relative-import-paths": "^1.4.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-react-hooks": "^4.4.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
+    "husky": "^8.0.2",
+    "lint-staged": "^13.0.3",
     "prettier": "^2.6.2",
+    "rollup-plugin-polyfill-node": "^0.11.0",
     "typechain": "^8.1.0",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.3",
+    "vite": "^3.2.4",
+    "vite-plugin-svgr": "^2.2.2",
+    "vite-tsconfig-paths": "^3.6.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }

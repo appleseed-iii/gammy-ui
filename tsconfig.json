@@ -4,12 +4,13 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "esModuleInterop": true,
-    "lib": ["ESNext", "dom"],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["vite/client", "vite-plugin-svgr/client"],
     "module": "ESNext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "sourceMap": true,
-    "target": "es2017",
+    "target": "ESNext",
     "jsx": "react-jsx",
     "baseUrl": ".",
     "skipLibCheck": true,
@@ -21,7 +22,7 @@
     "noEmit": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["index.d.ts", "src", "babel.config.js", "**/*.test.ts", "**/*.test.tsx"],
+  "include": ["./index.d.ts", "src", "babel.config.js", "**/*.test.ts", "**/*.test.tsx"],
   "exclude": ["node_modules", "vendor", "public"],
   "compileOnSave": false
 }

@@ -3,14 +3,12 @@
 import { Box } from "@mui/material";
 import React from "react";
 import { Route, Routes } from "react-router-dom";
+import userImg from "src/assets/imges/userImg.svg";
+import ConnectWallet from "src/components/ConnectWallet";
+import dynamicStyles from "src/dynamicStyles";
+import Edit from "src/views/LinkTree/Edit";
+import { LinkTree } from "src/views/LinkTree/LinkTree";
 import { useConnect } from "wagmi";
-
-import userImg from "./assets/imges/userImg.svg";
-import ConnectWallet from "./components/ConnectWallet.tsx";
-import MikesComp from "./components/MikesComp";
-import dynamicStyles from "./dynamicStyles";
-import Edit from "./views/LinkTree/Edit";
-import { LinkTree } from "./views/LinkTree/LinkTree.tsx";
 
 const appStyle = {
   textAlign: "center",
@@ -22,6 +20,7 @@ const appStyle = {
   alignContent: "center",
 };
 const param = window.location.search.split("=")[1] || 12;
+
 function App() {
   const { isConnected } = useConnect();
   return (
@@ -40,7 +39,6 @@ function App() {
             />
           }
         ></Route>
-        <Route color={"#ECECEE"} path="/mikes" element={<MikesComp />}></Route>
         <Route path="/edit" element={<Edit />}></Route>
       </Routes>
     </Box>
