@@ -1,20 +1,16 @@
-import "./style.scss";
+import "src/views/MintPage/style.scss";
 import "98.css";
 
 import { Box, Button, Paper, SvgIcon, Typography } from "@mui/material";
 import { useState } from "react";
+import { ReactComponent as ethImg } from "src/assets/eth.svg";
+import { ReactComponent as gOHMImg } from "src/assets/gOHM.svg";
 import { ConnectButton } from "src/components/ConnectWallet";
 import { Groove } from "src/components/Groove";
 import { UserBalanceRow } from "src/components/UserBalanceRow";
 import { useAccount, useConnect } from "wagmi";
 
-import { ReactComponent as ethImg } from "../../assets/eth.svg";
-import { ReactComponent as gOHMImg } from "../../assets/gOHM.svg";
-// import { UseQueryResult } from "react-query";
-
-// import { ILink, useGetLinksLT } from "./hooks/useLinkTree";
-
-export const LinkTree = () => {
+export const MintPage = () => {
   const { isConnected } = useConnect();
   const { data: accountData } = useAccount();
 

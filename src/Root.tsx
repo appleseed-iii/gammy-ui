@@ -4,6 +4,8 @@ import { FC } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { BrowserRouter } from "react-router-dom";
+import App from "src/App";
+import theme from "src/styles/theme";
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
@@ -12,9 +14,6 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
-
-import App from "./App";
-import theme from "./styles/theme";
 
 export const { chains, provider } = configureChains(
   [chain.mainnet, chain.rinkeby],
