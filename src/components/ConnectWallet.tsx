@@ -8,7 +8,7 @@ import { useState } from "react";
 import { ReactComponent as Windows98 } from "src/assets/windows-98-start.svg";
 import { Groove } from "src/components/Groove";
 import { abbreviatedAddress } from "src/helpers";
-import { WalletWarningTC } from "src/styles/theme";
+import { ConnectorRowTC, WalletWarningTC } from "src/styles/theme";
 import { Connector, useAccount, useConnect, useDisconnect } from "wagmi";
 
 export default function ConnectWallet() {
@@ -161,13 +161,12 @@ export function ConnectButton() {
             {!isConnected &&
               connectors.map(connector => (
                 <Box onClick={() => handleConnectBtn(connector)}>
-                  <Box
+                  <ConnectorRowTC
                     className=""
                     // disabled={!connector.ready}
                     key={connector.id}
                     sx={{
                       height: "40px",
-                      padding: "10px 0 10px 2px",
                       "&:hover": {
                         backgroundColor: "#00007B",
                         color: "#fff",
@@ -180,7 +179,7 @@ export function ConnectButton() {
                       {isLoading && pendingConnector?.id === connector.id && " (connecting)"}
                       {!connector.ready && " (unsupported)"}
                     </Typography>
-                  </Box>
+                  </ConnectorRowTC>
                   <Groove sx={{ borderBottom: "2px groove" }} />
                 </Box>
               ))}

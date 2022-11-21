@@ -182,4 +182,8 @@ export const WalletWarningTC = styled("div")(({ theme }) => ({
   padding: theme.spacing(1),
 }));
 
+export const ConnectorRowTC = styled("div")(({ theme }) => ({
+  padding: theme.spacing(1),
+}));
+
 export default theme;
