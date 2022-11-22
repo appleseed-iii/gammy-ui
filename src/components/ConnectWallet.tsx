@@ -4,7 +4,7 @@ import { Box, Button, Toolbar, Typography } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import SvgIcon from "@mui/material/SvgIcon";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ReactComponent as Windows98 } from "src/assets/windows-98-start.svg";
 import { Groove, StartBarDoubleGroove } from "src/components/Groove";
 import { UserBalanceText } from "src/components/UserBalanceRow";
@@ -61,8 +61,15 @@ export default function ConnectWallet() {
   );
 }
 
+const useIsMounted = () => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted;
+};
+
 export function ConnectButton() {
-  // const [{ data: connectData, error: connectError }, connect] = useConnect();
+  const isMounted = useIsMounted();
+
   const { connect, connectors, error: connectError, isLoading, pendingConnector } = useConnect();
   const { address, isConnected, connector: activeConnector } = useAccount();
   const { disconnect } = useDisconnect();
@@ -80,6 +87,8 @@ export function ConnectButton() {
     setHideWarning(false);
     connect({ connector });
   };
+
+  console.log("connectors", connectors);
 
   return (
     <>
@@ -179,9 +188,9 @@ export function ConnectButton() {
                     }}
                   >
                     <Typography>
-                      {connector.name}
+                      {isMounted ? connector.name : connector.id === "injected" ? connector.id : connector.name}
                       {isLoading && pendingConnector?.id === connector.id && " (connecting)"}
-                      {!connector.ready && " (unsupported)"}
+                      {isMounted ? !connector.ready && " (use Wallet Connect)" : ""}
                     </Typography>
                   </ConnectorRowTC>
                   <Groove sx={{ borderBottom: "2px groove" }} />
@@ -189,7 +198,13 @@ export function ConnectButton() {
               ))}
 
             {connectError && !hideWarning && (
-              <WalletWarningTC>{connectError?.message ?? "Failed to connect"}</WalletWarningTC>
+              <WalletWarningTC>
+                {connectError?.message
+                  ? connectError.message === "Connector not found"
+                    ? `${connectError.message}; try Wallet Connect`
+                    : `${connectError.message}`
+                  : "Failed to connect"}
+              </WalletWarningTC>
             )}
           </Box>
         </Box>
