@@ -2,66 +2,72 @@ import { useQuery } from "@tanstack/react-query";
 import { ethers } from "ethers";
 import toast from "react-hot-toast";
 import { EthersError, GAMMY_MINTER } from "src/constants";
+import { useSupportedChain } from "src/hooks/useSupportedChain";
 import { GammyGrams__factory } from "src/typechain";
 import { useAccount, useMutation, useNetwork, useProvider, useSigner } from "wagmi";
+
+const useGammyMinter = () => {
+  const { chain = { id: 1 } } = useNetwork();
+  const onSupportedChain = useSupportedChain();
+  const mintAddress = GAMMY_MINTER[chain?.id] || "";
+  const provider = useProvider();
+  const contract = GammyGrams__factory.connect(mintAddress, provider);
+  return { contract, onSupportedChain };
+};
 
 export const useGetGammyBalanceForAccount = () => {
   const { chain = { id: 1 } } = useNetwork();
   const { address } = useAccount();
-  const mintAddress = GAMMY_MINTER[chain?.id];
+  const { contract, onSupportedChain } = useGammyMinter();
   const provider = useProvider();
-  const contract = GammyGrams__factory.connect(mintAddress, provider);
   return useQuery<ethers.BigNumber, Error>(
     ["gammyBalanceForAccount", chain.id, address],
     async () => {
       return await contract.balanceOf(address as string);
     },
-    { enabled: !!chain && !!mintAddress && !!address && !!provider },
+    { enabled: onSupportedChain && !!chain && !!address && !!provider },
   );
 };
 
 export const useGetGammyPrice = () => {
   const { chain = { id: 1 } } = useNetwork();
   const { address } = useAccount();
-  const mintAddress = GAMMY_MINTER[chain?.id];
+  const { contract, onSupportedChain } = useGammyMinter();
   const provider = useProvider();
-  const contract = GammyGrams__factory.connect(mintAddress, provider);
   return useQuery<ethers.BigNumber, Error>(
     ["getGammyPrice", chain.id],
     async () => {
       return await contract.gammyPrice();
     },
-    { enabled: !!chain && !!mintAddress && !!address && !!provider },
+    { enabled: onSupportedChain && !!chain && !!address && !!provider },
   );
 };
 
 /** returns maxSupply */
 export const useGetMaxSupply = () => {
   const { chain = { id: 1 } } = useNetwork();
-  const mintAddress = GAMMY_MINTER[chain?.id];
+  const { contract, onSupportedChain } = useGammyMinter();
   const provider = useProvider();
-  const contract = GammyGrams__factory.connect(mintAddress, provider);
   return useQuery<ethers.BigNumber, Error>(
     ["gammyMaxSupply", chain.id],
     async () => {
       return await contract.TOKEN_LIMIT();
     },
-    { enabled: !!chain && !!mintAddress && !!provider },
+    { enabled: onSupportedChain && !!chain && !!provider },
   );
 };
 
 /** returns Total Supply -- ***total minted to date*** */
 export const useGetTotalSupply = () => {
   const { chain = { id: 1 } } = useNetwork();
-  const mintAddress = GAMMY_MINTER[chain?.id];
+  const { contract, onSupportedChain } = useGammyMinter();
   const provider = useProvider();
-  const contract = GammyGrams__factory.connect(mintAddress, provider);
   return useQuery<ethers.BigNumber, Error>(
     ["gammyTotalSupply", chain.id],
     async () => {
       return await contract.totalSupply();
     },
-    { enabled: !!chain && !!mintAddress && !!provider },
+    { enabled: onSupportedChain && !!chain && !!provider },
   );
 };
 
@@ -83,16 +89,15 @@ export const useGetRemainingSupply = () => {
 /** returns timestamp as unixTime */
 export const useGetStartSaleTimestamp = () => {
   const { chain = { id: 1 } } = useNetwork();
-  const mintAddress = GAMMY_MINTER[chain?.id];
+  const { contract, onSupportedChain } = useGammyMinter();
   const provider = useProvider();
-  const contract = GammyGrams__factory.connect(mintAddress, provider);
   return useQuery<number, Error>(
     ["gammyStartTimestamp", chain.id],
     async () => {
       const timestamp = await contract.startSaleTimestamp();
       return Number(ethers.utils.formatUnits(timestamp, 0));
     },
-    { enabled: !!chain && !!mintAddress && !!provider },
+    { enabled: onSupportedChain && !!chain && !!provider },
   );
 };
 
@@ -111,25 +116,24 @@ export const useGetCurrentBlockTimestamp = () => {
 };
 
 export const useMint = () => {
-  const { chain = { id: 1 } } = useNetwork();
-  const mintAddress = GAMMY_MINTER[chain?.id];
-  const provider = useProvider();
-  const contract = GammyGrams__factory.connect(mintAddress, provider);
+  const { contract, onSupportedChain } = useGammyMinter();
   const { data: signer } = useSigner();
   const { data: price } = useGetGammyPrice();
   // TODO(appleseed): update ANY types below
   return useMutation<ethers.ContractReceipt, EthersError, ethers.BigNumber>(
     async (gammiesToMint: ethers.BigNumber) => {
       if (!signer) throw new Error(`Signer is not set`);
+      if (!onSupportedChain) throw new Error(`Please switch to mainnet`);
       if (!price) throw new Error(`Price is not retrieved. Please try again`);
       if (!contract) throw new Error(`Something went wrong. Please try again`);
 
       if (gammiesToMint.lte(0)) throw new Error(`You must buy more than ${gammiesToMint}`);
 
       const totalPrice = price.mul(gammiesToMint);
-      toast.success(`Finish execution in wallet.`);
+      toast.success(`Finish execution in wallet.`, { id: "mint-execution-status" });
       const tx = await contract.connect(signer).mintFromSale(gammiesToMint, { value: totalPrice });
-      toast.success(`Submitted & awaiting mining.`);
+      toast.remove("mint-execution-status");
+      toast.success(`Submitted & awaiting mining.`, { id: "mint-execution-status" });
       return tx.wait();
     },
     {
