@@ -83,7 +83,6 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
 
 export const MintPage = () => {
   const { address, isConnected } = useAccount();
-
   const [currency, setCurrency] = useState<TCurrency>("ETH");
   const { data: price, isLoading: priceIsLoading } = useGetGammyPrice();
   const { data: remainingSupply, isLoading: isRemainingLoading } = useGetRemainingSupply();
