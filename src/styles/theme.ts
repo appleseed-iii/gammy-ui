@@ -85,7 +85,7 @@ let theme = createTheme({
     action: {
       activatedOpacity: 0.24,
       active: "#fff",
-      disabled: "rgba(255, 255, 255, 0.3)",
+      disabled: "#808080",
       disabledBackground: "rgba(255, 255, 255, 0.12)",
       disabledOpacity: 0.38,
       focus: "rgba(255, 255, 255, 0.12)",
@@ -146,6 +146,12 @@ let theme = createTheme({
           background: "#BFBFBF",
           boxShadow:
             "inset -1px -1px 0px #000000, inset 1px 1px 0px #DBDBDB, inset -2px -2px 0px #808080, inset 2px 2px 0px #FFFFFF",
+        },
+        root: {
+          "&.Mui-disabled": {
+            textShadow: "1px 1px 0 #fff",
+            color: "#808080",
+          },
         },
       },
     },
