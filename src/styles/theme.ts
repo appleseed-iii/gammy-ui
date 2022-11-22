@@ -68,10 +68,12 @@ let theme = createTheme({
       700: "#AB6800",
       800: "#8C5800",
       900: "#5A3600",
-      contrastText: contrastTextColor,
+      contrastText: "#eb0c0c",
       dark: "#AB6800",
       light: "#FFDC48",
       main: "#DEA500",
+      // ketchup: "#eb0c0c",
+      // mustard: "#feff00",
     },
     info: { main: "#29b6f6", light: "#4fc3f7", dark: "#0288d1", contrastText: contrastTextColor },
     text: {
@@ -83,7 +85,7 @@ let theme = createTheme({
     action: {
       activatedOpacity: 0.24,
       active: "#fff",
-      disabled: "rgba(255, 255, 255, 0.3)",
+      disabled: "#808080",
       disabledBackground: "rgba(255, 255, 255, 0.12)",
       disabledOpacity: 0.38,
       focus: "rgba(255, 255, 255, 0.12)",
@@ -108,7 +110,7 @@ let theme = createTheme({
   shape: { borderRadius: 1 },
   spacing: 8,
   zIndex: {
-    appBar: 1100,
+    appBar: 1201,
     drawer: 1200,
     fab: 1050,
     mobileStepper: 1000,
@@ -145,6 +147,12 @@ let theme = createTheme({
           boxShadow:
             "inset -1px -1px 0px #000000, inset 1px 1px 0px #DBDBDB, inset -2px -2px 0px #808080, inset 2px 2px 0px #FFFFFF",
         },
+        root: {
+          "&.Mui-disabled": {
+            textShadow: "1px 1px 0 #fff",
+            color: "#808080",
+          },
+        },
       },
     },
     MuiIcon: {
@@ -173,6 +181,15 @@ export const FormRowThemeComponent = styled("div")(({ theme }) => ({
 export const FormInputThemeComponent = styled("span")(({ theme }) => ({
   padding: theme.spacing(1),
   margin: theme.spacing(1),
+}));
+
+export const WalletWarningTC = styled("div")(({ theme }) => ({
+  color: theme.palette.warning.contrastText,
+  padding: theme.spacing(1),
+}));
+
+export const ConnectorRowTC = styled("div")(({ theme }) => ({
+  padding: theme.spacing(1),
 }));
 
 export default theme;

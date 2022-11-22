@@ -5,15 +5,15 @@ import AppBar from "@mui/material/AppBar";
 import SvgIcon from "@mui/material/SvgIcon";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import { useState } from "react";
+import { ReactComponent as Windows98 } from "src/assets/windows-98-start.svg";
+import { Groove, StartBarDoubleGroove } from "src/components/Groove";
+import { UserBalanceText } from "src/components/UserBalanceRow";
 import { abbreviatedAddress } from "src/helpers";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
-
-import { ReactComponent as Windows98 } from "../assets/windows-98-start.svg";
-import { Groove } from "./Groove";
+import { ConnectorRowTC, WalletWarningTC } from "src/styles/theme";
+import { Connector, useAccount, useConnect, useDisconnect } from "wagmi";
 
 export default function ConnectWallet() {
-  const { isConnected } = useConnect();
-  const { data: accountData } = useAccount();
+  const { address, isConnected } = useAccount();
 
   return (
     <>
@@ -24,34 +24,37 @@ export default function ConnectWallet() {
         sx={{ height: "48px", padding: 0, top: "auto", bottom: 0 }}
       >
         <Toolbar id="start-toolbar" sx={{ padding: "0 0 0 2px !important", minHeight: "48px !important" }}>
-          <Box>
+          <Box display="flex" justifyContent="center">
             <ConnectButton />
           </Box>
-          <Groove
-            sx={{ marginLeft: "4px", borderLeft: "2px groove", borderBottom: "none", height: "40px", width: "3px" }}
-          />
-          <Groove
-            sx={{ marginLeft: "2px", borderLeft: "4px ridge", borderBottom: "none", height: "32px", width: "4px" }}
-          />
+          <StartBarDoubleGroove />
           {isConnected && (
-            <Typography
-              sx={{
-                paddingLeft: "6px",
-                fontSize: "0.875rem",
-                fontWeight: "500",
-                letterSpacing: "0.02857em",
-                textTransform: "uppercase",
-              }}
-            >
-              {abbreviatedAddress(accountData?.address)}
-            </Typography>
+            <>
+              <Typography
+                sx={{
+                  paddingLeft: "6px",
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  letterSpacing: "0.02857em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {abbreviatedAddress(address)}
+              </Typography>
+              <StartBarDoubleGroove />
+              <UserBalanceText
+                currency={"ETH"}
+                address={address as string}
+                typographyStyles={{
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  letterSpacing: "0.02857em",
+                  textTransform: "uppercase",
+                }}
+              />
+            </>
           )}
-          <Groove
-            sx={{ marginLeft: "4px", borderLeft: "2px groove", borderBottom: "none", height: "40px", width: "3px" }}
-          />
-          <Groove
-            sx={{ marginLeft: "2px", borderLeft: "4px ridge", borderBottom: "none", height: "32px", width: "4px" }}
-          />
+          <StartBarDoubleGroove />
         </Toolbar>
       </AppBar>
     </>
@@ -60,29 +63,27 @@ export default function ConnectWallet() {
 
 export function ConnectButton() {
   // const [{ data: connectData, error: connectError }, connect] = useConnect();
-  const {
-    activeConnector,
-    connect,
-    connectors,
-    error: connectError,
-    isConnecting,
-    isConnected,
-    pendingConnector,
-  } = useConnect();
-  const { data: accountData } = useAccount();
+  const { connect, connectors, error: connectError, isLoading, pendingConnector } = useConnect();
+  const { address, isConnected, connector: activeConnector } = useAccount();
   const { disconnect } = useDisconnect();
+  const [hideWarning, setHideWarning] = useState(false);
 
   const [openConnectWallet, setOpenConnectWallet] = useState(false);
   // const handleOpenConnectWallet = () => setOpenConnectWallet(true);
   // const handleCloseConnectWallet = () => setOpenConnectWallet(false);
   const toggleDrawer = () => {
     console.log("toggleDrawer", !openConnectWallet);
+    setHideWarning(true);
     setOpenConnectWallet(!openConnectWallet);
+  };
+  const handleConnectBtn = (connector: Connector<any, any, any>) => {
+    setHideWarning(false);
+    connect({ connector });
   };
 
   return (
-    <div>
-      {isConnected && accountData ? (
+    <>
+      {isConnected && address ? (
         <Button variant="outlined" onClick={() => disconnect()} sx={{ zIndex: "1200" }}>
           <Windows98 style={{ height: 20, width: 20 }} />
           Disconnect
@@ -99,6 +100,7 @@ export function ConnectButton() {
           sx: { height: "200px", width: "300px", padding: "0", marginBottom: "48px" },
         }}
         BackdropProps={{ sx: { backgroundColor: "transparent" } }}
+        swipeAreaWidth={0}
         anchor={"bottom"}
         open={openConnectWallet}
         onClose={toggleDrawer}
@@ -128,7 +130,7 @@ export function ConnectButton() {
             </Typography>
           </Box>
           <Box id="connector-container" display="flex" flexDirection="column" flexGrow="1">
-            {isConnected && accountData && (
+            {isConnected && address && (
               <>
                 <Box
                   className=""
@@ -141,7 +143,7 @@ export function ConnectButton() {
                     },
                   }}
                 >
-                  <div>{abbreviatedAddress(accountData?.address)}</div>
+                  <div>{abbreviatedAddress(address)}</div>
                 </Box>
                 <Groove sx={{ borderBottom: "2px groove" }} />
                 <Box
@@ -155,21 +157,20 @@ export function ConnectButton() {
                     },
                   }}
                 >
-                  <div>Connected to {accountData?.connector?.name}</div>
+                  <div>Connected to {activeConnector?.name}</div>
                 </Box>
               </>
             )}
 
             {!isConnected &&
               connectors.map(connector => (
-                <Box>
-                  <Box
+                <Box onClick={() => handleConnectBtn(connector)}>
+                  <ConnectorRowTC
                     className=""
+                    // disabled={!connector.ready}
                     key={connector.id}
-                    onClick={() => connect(connector)}
                     sx={{
                       height: "40px",
-                      padding: "10px 0 10px 2px",
                       "&:hover": {
                         backgroundColor: "#00007B",
                         color: "#fff",
@@ -179,18 +180,21 @@ export function ConnectButton() {
                   >
                     <Typography>
                       {connector.name}
+                      {isLoading && pendingConnector?.id === connector.id && " (connecting)"}
                       {!connector.ready && " (unsupported)"}
                     </Typography>
-                  </Box>
+                  </ConnectorRowTC>
                   <Groove sx={{ borderBottom: "2px groove" }} />
                 </Box>
               ))}
 
-            {connectError && <div>{connectError?.message ?? "Failed to connect"}</div>}
+            {connectError && !hideWarning && (
+              <WalletWarningTC>{connectError?.message ?? "Failed to connect"}</WalletWarningTC>
+            )}
           </Box>
         </Box>
       </SwipeableDrawer>
-    </div>
+    </>
   );
 }
 
