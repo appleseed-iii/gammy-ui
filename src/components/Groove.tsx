@@ -7,8 +7,6 @@ interface GrooveProps {
 }
 
 export const Groove = ({ sx = [], children }: GrooveProps) => {
-  console.log("sx", sx);
-  console.log(Array.isArray(sx));
   return (
     <Box
       sx={[

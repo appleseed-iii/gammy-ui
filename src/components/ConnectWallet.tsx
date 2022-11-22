@@ -24,7 +24,7 @@ export default function ConnectWallet() {
         sx={{ height: "48px", padding: 0, top: "auto", bottom: 0 }}
       >
         <Toolbar id="start-toolbar" sx={{ padding: "0 0 0 2px !important", minHeight: "48px !important" }}>
-          <Box>
+          <Box display="flex" justifyContent="center">
             <ConnectButton />
           </Box>
           <StartBarDoubleGroove />
