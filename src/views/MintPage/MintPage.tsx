@@ -114,13 +114,15 @@ export const MintPage = () => {
           <Box id="nft-mint-supply-row" display="flex" flexDirection="row" justifyContent="space-between">
             <Typography>Remaining / Supply</Typography>
             <Box display={`flex`} flexDirection={`row`}>
-              <Typography>{isRemainingLoading ? <Skeleton width={69} /> : `${remainingSupply}`}</Typography>
+              <Typography>
+                {isRemainingLoading || !remainingSupply ? <Skeleton width={69} /> : `${remainingSupply}`}
+              </Typography>
               <Typography>
                 &nbsp;
                 {`/`}
                 &nbsp;
               </Typography>
-              <Typography>{isMaxLoading ? <Skeleton width={69} /> : `${maxSupply}`}</Typography>
+              <Typography>{isMaxLoading || !maxSupply ? <Skeleton width={69} /> : `${maxSupply}`}</Typography>
             </Box>
           </Box>
           <Box id="nft-price-row" display="flex" flexDirection="row" justifyContent="space-between">
@@ -133,7 +135,7 @@ export const MintPage = () => {
               )}
               <Box display="flex" sx={{ fontSize: "20px" }}>
                 <Typography sx={{ marginRight: "3px " }}>
-                  {priceIsLoading ? <Skeleton /> : ethers.utils.formatEther(price)}
+                  {priceIsLoading || !price ? <Skeleton /> : ethers.utils.formatEther(price)}
                 </Typography>
                 <select onChange={e => changeCurrency(e.target.value as TCurrency)}>
                   <option>ETH</option>
