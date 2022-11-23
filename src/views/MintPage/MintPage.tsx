@@ -108,51 +108,74 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
 
   return (
     <>
-      <UserBalanceRow currency={currency} address={address as string} />
-      <Groove sx={{ margin: "10px" }} />
-      <Box id="quantity-row" display="flex" justifyContent="space-between">
-        <Typography>Mint Quantity</Typography>
-        <input
-          id="mintQuantity"
-          type="number"
-          style={{ width: "69px" }}
-          maxLength={4}
-          step={1}
-          value={Number(ethers.utils.formatUnits(quantity, 0))}
-          onChange={e => changeQuantity(Number(e.target.value))}
-        />
-      </Box>
-      <Box id="total-row" display="flex" justifyContent="space-between">
-        <Typography>Total Price</Typography>
-        <Typography>{priceIsLoading ? <Skeleton /> : ethers.utils.formatEther(totalPrice)}</Typography>
-      </Box>
+      {isConnected && !!address ? (
+        <>
+          <UserBalanceRow currency={currency} address={address as string} />
+          <Groove sx={{ margin: "10px" }} />
+          <Box id="quantity-row" display="flex" justifyContent="space-between">
+            <Typography>Mint Quantity</Typography>
+            <input
+              id="mintQuantity"
+              type="number"
+              style={{ width: "69px" }}
+              maxLength={4}
+              step={1}
+              value={Number(ethers.utils.formatUnits(quantity, 0))}
+              onChange={e => changeQuantity(Number(e.target.value))}
+            />
+          </Box>
+          <Box id="total-row" display="flex" justifyContent="space-between">
+            <Typography>Total Price</Typography>
+            <Typography>{priceIsLoading ? <Skeleton /> : ethers.utils.formatEther(totalPrice)}</Typography>
+          </Box>
 
-      {!isCurrentTimestampLoading &&
-      !isStartTimestampLoading &&
-      !!currentTimestamp &&
-      !!startSaleTimestamp &&
-      currentTimestamp <= startSaleTimestamp &&
-      seconds > 0 ? (
-        <Box display="flex" justifyContent="center">
-          <Typography variant="h6">{`Mint in: ${prettifySeconds(seconds)}`}</Typography>
-        </Box>
-      ) : currency !== "ETH" && !hasAllowance ? (
-        <Box id="buy-row" display="flex" justifyContent="flex-end">
-          <Button disabled={disableApproval} variant="outlined" onClick={() => approval.mutate()}>
-            {zeroSupply ? `Sold Out!` : mint.isLoading ? `Executing in Wallet...` : `Approve gOHM`}
-          </Button>
-        </Box>
+          {!isCurrentTimestampLoading &&
+          !isStartTimestampLoading &&
+          !!currentTimestamp &&
+          !!startSaleTimestamp &&
+          currentTimestamp <= startSaleTimestamp &&
+          seconds > 0 ? (
+            <Box display="flex" justifyContent="center">
+              <Typography variant="h6">{`Mint in: ${prettifySeconds(seconds)}`}</Typography>
+            </Box>
+          ) : currency !== "ETH" && !hasAllowance ? (
+            <Box id="buy-row" display="flex" justifyContent="flex-end">
+              <Button disabled={disableApproval} variant="outlined" onClick={() => approval.mutate()}>
+                {zeroSupply ? `Sold Out!` : mint.isLoading ? `Executing in Wallet...` : `Approve gOHM`}
+              </Button>
+            </Box>
+          ) : (
+            <Box id="buy-row" display="flex" justifyContent="flex-end">
+              <Button
+                disabled={disableMint}
+                variant="outlined"
+                onClick={() => mint.mutate({ gammiesToMint: quantity, currency })}
+              >
+                {zeroSupply ? `Sold Out!` : mint.isLoading ? `Executing in Wallet...` : `Mint!`}
+              </Button>
+            </Box>
+          )}
+        </>
       ) : (
-        <Box id="buy-row" display="flex" justifyContent="flex-end">
-          <Button
-            disabled={disableMint}
-            variant="outlined"
-            onClick={() => mint.mutate({ gammiesToMint: quantity, currency })}
-          >
-            {zeroSupply ? `Sold Out!` : mint.isLoading ? `Executing in Wallet...` : `Mint!`}
-          </Button>
+        <Box id="buy-row" display="flex column" justifyContent="center" sx={{ margin: "10px", minHeight: "48px" }}>
+          <Box display="flex" justifyContent="center">
+            <ConnectButton />
+          </Box>
+          <Box display="flex" justifyContent="center">
+            {!isCurrentTimestampLoading &&
+              !isStartTimestampLoading &&
+              !!currentTimestamp &&
+              !!startSaleTimestamp &&
+              currentTimestamp <= startSaleTimestamp &&
+              seconds > 0 && (
+                <Box display="flex" justifyContent="center">
+                  <Typography variant="h6">{`Mint in: ${prettifySeconds(seconds)}`}</Typography>
+                </Box>
+              )}
+          </Box>
         </Box>
       )}
+
       <Groove sx={{ margin: "12px 10px 2.5px 10px" }} />
 
       <Groove sx={{ margin: "2.5px 10px 10px 10px" }} />
@@ -230,15 +253,7 @@ export const MintPage = () => {
               </Box>
             </Box>
           </Box>
-          {isConnected && !!address ? (
-            <MintButton currency={currency} />
-          ) : (
-            <Box id="buy-row" display="flex" justifyContent="center" sx={{ margin: "10px", minHeight: "48px" }}>
-              <Box display="flex" justifyContent="center">
-                <ConnectButton />
-              </Box>
-            </Box>
-          )}
+          <MintButton currency={currency} />
           <Box id="nft-details-row" display="flex" flexDirection="row" justifyContent="space-between">
             <blockquote style={{ maxWidth: "500px", background: "#dfdfdf", padding: "1em", margin: "0.2em" }}>
               Each Gammy Gram is an actual email from Gammy or sometimes your other boomer family members. They just
