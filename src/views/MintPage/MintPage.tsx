@@ -19,6 +19,7 @@ import {
   useGetMaxSupply,
   useGetRemainingSupply,
   useGetStartSaleTimestamp,
+  useHasFreeMint,
   useMint,
   useRemainingSeconds,
 } from "src/views/MintPage/hooks/useGammy";
@@ -36,6 +37,12 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
   const { data: startSaleTimestamp, isLoading: isStartTimestampLoading } = useGetStartSaleTimestamp();
   const { data: currentTimestamp, isLoading: isCurrentTimestampLoading } = useGetCurrentBlockTimestamp();
   const { data: remainingSeconds, isLoading: isRemainingSecondsLoading } = useRemainingSeconds();
+  const { data: hasFreeMint } = useHasFreeMint();
+  useEffect(() => {
+    if (hasFreeMint && !!price) {
+      setTotalPrice(price.mul(quantity.sub(1)));
+    }
+  }, [hasFreeMint]);
 
   const [seconds, setSeconds] = useState(remainingSeconds);
   useEffect(() => {
@@ -67,7 +74,11 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
     }
     setQuantity(thisQuantity);
     if (!!price && price.gt(0)) {
-      setTotalPrice(price.mul(thisQuantity));
+      if (hasFreeMint) {
+        setTotalPrice(price.mul(quantity.sub(1)));
+      } else {
+        setTotalPrice(price.mul(thisQuantity));
+      }
     }
   };
 
@@ -198,7 +209,14 @@ export const MintPage = () => {
           <Groove sx={{ margin: "10px" }} />
           <Box id="faq-row" display="flex" justifyContent="center" sx={{ marginTop: "10px", minHeight: "48px" }}>
             <Box display="flex" justifyContent="center">
-              <Button variant="outlined">Question?</Button>
+              <Button
+                variant="outlined"
+                onClick={() =>
+                  toast.success("Please call me on Twitter @Gammy69420", { id: "q?", position: "bottom-center" })
+                }
+              >
+                Question?
+              </Button>
             </Box>
           </Box>
         </Box>

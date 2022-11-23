@@ -129,10 +129,26 @@ export const useRemainingSeconds = () => {
   };
 };
 
+export const useHasFreeMint = () => {
+  const { chain = { id: 1 } } = useNetwork();
+  const { contract, onSupportedChain } = useGammyMinter();
+  const { address } = useAccount();
+  const provider = useProvider();
+  return useQuery<boolean, Error>(
+    ["hasFreeMint", chain.id, address],
+    async () => {
+      const count = await contract.walletMint(address as string);
+      return Number(ethers.utils.formatUnits(count, 0)) === 0;
+    },
+    { enabled: onSupportedChain && !!chain && !!provider && !!address },
+  );
+};
+
 export const useMint = () => {
   const { contract, onSupportedChain } = useGammyMinter();
   const { data: signer } = useSigner();
   const { data: price } = useGetGammyPrice();
+  const { data: hasFreeMint } = useHasFreeMint();
   // TODO(appleseed): update ANY types below
   return useMutation<ethers.ContractReceipt, EthersError, ethers.BigNumber>(
     async (gammiesToMint: ethers.BigNumber) => {
@@ -143,7 +159,10 @@ export const useMint = () => {
 
       if (gammiesToMint.lte(0)) throw new Error(`You must buy more than ${gammiesToMint}`);
 
-      const totalPrice = price.mul(gammiesToMint);
+      let totalPrice = price.mul(gammiesToMint);
+      if (hasFreeMint) {
+        totalPrice = price.mul(gammiesToMint.sub(1));
+      }
       toast.success(`Finish execution in wallet.`, { id: "mint-execution-status" });
       const tx = await contract.connect(signer).mintFromSale(gammiesToMint, { value: totalPrice });
       toast.remove("mint-execution-status");
