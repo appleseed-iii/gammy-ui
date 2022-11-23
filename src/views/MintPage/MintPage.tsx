@@ -3,7 +3,7 @@ import "98.css";
 
 import { Box, Button, Paper, Skeleton, SvgIcon, Typography } from "@mui/material";
 import { ethers } from "ethers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ReactComponent as ethImg } from "src/assets/eth.svg";
 import { ReactComponent as gOHMImg } from "src/assets/gOHM.svg";
@@ -11,7 +11,17 @@ import { ConnectButton } from "src/components/ConnectWallet";
 import { Groove } from "src/components/Groove";
 import { HeaderBar } from "src/components/HeaderBar";
 import { UserBalanceRow } from "src/components/UserBalanceRow";
-import { useGetGammyPrice, useGetMaxSupply, useGetRemainingSupply, useMint } from "src/views/MintPage/hooks/useGammy";
+import { prettifySeconds } from "src/helpers";
+import { useInterval } from "src/hooks/useInterval";
+import {
+  useGetCurrentBlockTimestamp,
+  useGetGammyPrice,
+  useGetMaxSupply,
+  useGetRemainingSupply,
+  useGetStartSaleTimestamp,
+  useMint,
+  useRemainingSeconds,
+} from "src/views/MintPage/hooks/useGammy";
 import { useAccount } from "wagmi";
 type TCurrency = "ETH" | "gOHM";
 
@@ -23,6 +33,17 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
   const [totalPrice, setTotalPrice] = useState<ethers.BigNumber>(
     priceIsLoading || !price ? ethers.utils.parseEther("0.01") : price.mul(quantity),
   );
+  const { data: startSaleTimestamp, isLoading: isStartTimestampLoading } = useGetStartSaleTimestamp();
+  const { data: currentTimestamp, isLoading: isCurrentTimestampLoading } = useGetCurrentBlockTimestamp();
+  const { data: remainingSeconds, isLoading: isRemainingSecondsLoading } = useRemainingSeconds();
+
+  const [seconds, setSeconds] = useState(remainingSeconds);
+  useEffect(() => {
+    setSeconds(remainingSeconds);
+  }, [remainingSeconds]);
+  useInterval(() => {
+    setSeconds(seconds - 1);
+  }, 1000);
 
   const mint = useMint();
   const zeroSupply = !isRemainingLoading && !!remainingSupply && remainingSupply.lte(0);
@@ -32,11 +53,14 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
     let thisQuantity = ethers.BigNumber.from("0");
     if (inputQuantity > 0) {
       thisQuantity = ethers.utils.parseUnits(String(inputQuantity), 0);
-
-      // max out at remaining supply
-      if (!!remainingSupply && !thisQuantity.lte(remainingSupply)) {
-        thisQuantity = remainingSupply;
-        const id = ethers.utils.formatUnits(remainingSupply, 0);
+      // max out at remaining supply || 30
+      if (!!remainingSupply && (!thisQuantity.lte(remainingSupply) || !thisQuantity.lte(30))) {
+        if (remainingSupply.lte(30)) {
+          thisQuantity = remainingSupply;
+        } else {
+          thisQuantity = ethers.utils.parseUnits(String(30), 0);
+        }
+        const id = ethers.utils.formatUnits(thisQuantity, 0);
         const errorMessage = `You can mint a maximum of ${id}`;
         toast.error(errorMessage, { id: id });
       }
@@ -57,7 +81,7 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
           id="mintQuantity"
           type="number"
           style={{ width: "69px" }}
-          maxLength={5}
+          maxLength={4}
           step={1}
           value={Number(ethers.utils.formatUnits(quantity, 0))}
           onChange={e => changeQuantity(Number(e.target.value))}
@@ -67,13 +91,23 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
         <Typography>Total Price</Typography>
         <Typography>{priceIsLoading ? <Skeleton /> : ethers.utils.formatEther(totalPrice)}</Typography>
       </Box>
-      <Box id="buy-row" display="flex" justifyContent="flex-end">
-        {/* <Box display="flex" justifyContent="center" sx={{ width: "75%" }} alignItems="center"> */}
-        <Button disabled={disableMint} variant="outlined" onClick={() => mint.mutate(quantity)}>
-          {zeroSupply ? `Sold Out!` : mint.isLoading ? `Executing in Wallet...` : `Mint!`}
-        </Button>
-        {/* </Box> */}
-      </Box>
+
+      {!isCurrentTimestampLoading &&
+      !isStartTimestampLoading &&
+      !!currentTimestamp &&
+      !!startSaleTimestamp &&
+      currentTimestamp <= startSaleTimestamp &&
+      seconds > 0 ? (
+        <Box display="flex" justifyContent="center">
+          <Typography variant="h6">{`Mint in: ${prettifySeconds(seconds)}`}</Typography>
+        </Box>
+      ) : (
+        <Box id="buy-row" display="flex" justifyContent="flex-end">
+          <Button disabled={disableMint} variant="outlined" onClick={() => mint.mutate(quantity)}>
+            {zeroSupply ? `Sold Out!` : mint.isLoading ? `Executing in Wallet...` : `Mint!`}
+          </Button>
+        </Box>
+      )}
       <Groove sx={{ margin: "12px 10px 2.5px 10px" }} />
 
       <Groove sx={{ margin: "2.5px 10px 10px 10px" }} />

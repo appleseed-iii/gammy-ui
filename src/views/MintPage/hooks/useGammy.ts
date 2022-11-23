@@ -115,6 +115,20 @@ export const useGetCurrentBlockTimestamp = () => {
   );
 };
 
+export const useRemainingSeconds = () => {
+  const { data: startSaleTimestamp, isLoading: isStartTimestampLoading } = useGetStartSaleTimestamp();
+  const { data: currentTimestamp, isLoading: isCurrentTimestampLoading } = useGetCurrentBlockTimestamp();
+  let remainingTime = 0;
+  if (!!startSaleTimestamp && !!currentTimestamp) {
+    remainingTime = startSaleTimestamp - currentTimestamp;
+  }
+  return {
+    data: remainingTime,
+    isLoading: isStartTimestampLoading || isCurrentTimestampLoading,
+    // isFetched: totalSupplyFetched || maxSupplyFetched,
+  };
+};
+
 export const useMint = () => {
   const { contract, onSupportedChain } = useGammyMinter();
   const { data: signer } = useSigner();
