@@ -16,6 +16,7 @@ import { useInterval } from "src/hooks/useInterval";
 import {
   TCurrency,
   useApproveToken,
+  useCodeURL,
   useGetAllowanceForToken,
   useGetCurrentBlockTimestamp,
   useGetGammyPrice,
@@ -160,6 +161,7 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
 };
 
 export const MintPage = () => {
+  const { data: codeURL } = useCodeURL();
   const { address, isConnected } = useAccount();
   const [currency, setCurrency] = useState<TCurrency>("ETH");
   const { data: price, isLoading: priceIsLoading } = useGetGammyPrice();
@@ -255,6 +257,11 @@ export const MintPage = () => {
                 }
               >
                 Question?
+              </Button>
+            </Box>
+            <Box display="flex" justifyContent="center">
+              <Button variant="outlined" target="_blank" href={codeURL}>
+                See Contract Code
               </Button>
             </Box>
           </Box>

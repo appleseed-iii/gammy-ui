@@ -97,6 +97,22 @@ export const useGetRemainingSupply = () => {
   };
 };
 
+export const useCodeURL = () => {
+  const { chain } = useNetwork();
+  const { contract, onSupportedChain } = useGammyMinter();
+  if (!onSupportedChain) return "";
+
+  let url: string;
+  if (chain?.id === 5) {
+    url = `https://goerli.etherscan.deth.net/address/${contract.address}`;
+  } else {
+    url = `https://etherscan.deth.net/address/${contract.address}`;
+  }
+  return {
+    data: url,
+  };
+};
+
 /** returns timestamp as unixTime */
 export const useGetStartSaleTimestamp = () => {
   const { chain = { id: 1 } } = useNetwork();

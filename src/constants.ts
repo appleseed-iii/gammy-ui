@@ -7,7 +7,7 @@ interface IAddresses {
 }
 
 export const GAMMY_MINTER: IAddresses = {
-  [chain.goerli.id]: "0x1583cFce29a1581e53A358Caf1B370743337CD69",
+  [chain.goerli.id]: "0x3B15D749869f99069a8dEb2C44507aEb2e0511d9",
   [chain.mainnet.id]: "",
 };
 
