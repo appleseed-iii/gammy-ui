@@ -36,7 +36,6 @@ export const useGetGammyBalanceForAccount = () => {
 
 export const useGetGammyPrice = () => {
   const { chain = { id: 1 } } = useNetwork();
-  const { address } = useAccount();
   const { contract, onSupportedChain } = useGammyMinter();
   const provider = useProvider();
   return useQuery<{ eth: ethers.BigNumber; gohm: ethers.BigNumber }, Error>(
@@ -50,7 +49,7 @@ export const useGetGammyPrice = () => {
         gohm,
       };
     },
-    { enabled: onSupportedChain && !!chain && !!address && !!provider },
+    { enabled: onSupportedChain && !!chain && !!provider },
   );
 };
 
