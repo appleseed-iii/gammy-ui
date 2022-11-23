@@ -2,3 +2,4 @@
 /* tslint:disable */
 /* eslint-disable */
 export { GammyGrams__factory } from "./GammyGrams__factory";
+export { IERC20__factory } from "./IERC20__factory";
