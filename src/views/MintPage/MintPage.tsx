@@ -14,6 +14,9 @@ import { UserBalanceRow } from "src/components/UserBalanceRow";
 import { prettifySeconds } from "src/helpers";
 import { useInterval } from "src/hooks/useInterval";
 import {
+  TCurrency,
+  useApproveToken,
+  useGetAllowanceForToken,
   useGetCurrentBlockTimestamp,
   useGetGammyPrice,
   useGetMaxSupply,
@@ -24,7 +27,6 @@ import {
   useRemainingSeconds,
 } from "src/views/MintPage/hooks/useGammy";
 import { useAccount } from "wagmi";
-type TCurrency = "ETH" | "gOHM";
 
 const MintButton = ({ currency }: { currency: TCurrency }) => {
   const { address, isConnected } = useAccount();
@@ -32,17 +34,31 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
   const { data: price, isLoading: priceIsLoading } = useGetGammyPrice();
   const [quantity, setQuantity] = useState<ethers.BigNumber>(ethers.BigNumber.from("1"));
   const [totalPrice, setTotalPrice] = useState<ethers.BigNumber>(
-    priceIsLoading || !price ? ethers.utils.parseEther("0.01") : price.mul(quantity),
+    priceIsLoading || !price
+      ? ethers.utils.parseEther("0.01")
+      : currency === "ETH"
+      ? price.eth.mul(quantity)
+      : price.gohm.mul(quantity),
   );
   const { data: startSaleTimestamp, isLoading: isStartTimestampLoading } = useGetStartSaleTimestamp();
   const { data: currentTimestamp, isLoading: isCurrentTimestampLoading } = useGetCurrentBlockTimestamp();
   const { data: remainingSeconds, isLoading: isRemainingSecondsLoading } = useRemainingSeconds();
   const { data: hasFreeMint } = useHasFreeMint();
+  const { data: hasAllowance } = useGetAllowanceForToken();
+
   useEffect(() => {
-    if (hasFreeMint && !!price) {
-      setTotalPrice(price.mul(quantity.sub(1)));
+    let priceQuantity = quantity;
+    if (hasFreeMint) {
+      priceQuantity = quantity.sub(1);
     }
-  }, [hasFreeMint]);
+    if (!!price) {
+      if (currency === "ETH") {
+        setTotalPrice(price.eth.mul(priceQuantity));
+      } else {
+        setTotalPrice(price.gohm.mul(priceQuantity));
+      }
+    }
+  }, [hasFreeMint, currency]);
 
   const [seconds, setSeconds] = useState(remainingSeconds);
   useEffect(() => {
@@ -53,8 +69,10 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
   }, 1000);
 
   const mint = useMint();
+  const approval = useApproveToken();
   const zeroSupply = !isRemainingLoading && !!remainingSupply && remainingSupply.lte(0);
   const disableMint = mint.isLoading || zeroSupply;
+  const disableApproval = approval.isLoading || zeroSupply;
 
   const changeQuantity = (inputQuantity: number) => {
     let thisQuantity = ethers.BigNumber.from("0");
@@ -73,11 +91,16 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
       }
     }
     setQuantity(thisQuantity);
-    if (!!price && price.gt(0)) {
+    if (!!price) {
+      let priceQuantity = thisQuantity;
       if (hasFreeMint) {
-        setTotalPrice(price.mul(quantity.sub(1)));
+        priceQuantity = thisQuantity.sub(1);
+      }
+
+      if (currency === "ETH") {
+        setTotalPrice(price.eth.mul(priceQuantity));
       } else {
-        setTotalPrice(price.mul(thisQuantity));
+        setTotalPrice(price.gohm.mul(priceQuantity));
       }
     }
   };
@@ -112,9 +135,19 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
         <Box display="flex" justifyContent="center">
           <Typography variant="h6">{`Mint in: ${prettifySeconds(seconds)}`}</Typography>
         </Box>
+      ) : currency !== "ETH" && !hasAllowance ? (
+        <Box id="buy-row" display="flex" justifyContent="flex-end">
+          <Button disabled={disableApproval} variant="outlined" onClick={() => approval.mutate()}>
+            {zeroSupply ? `Sold Out!` : mint.isLoading ? `Executing in Wallet...` : `Approve gOHM`}
+          </Button>
+        </Box>
       ) : (
         <Box id="buy-row" display="flex" justifyContent="flex-end">
-          <Button disabled={disableMint} variant="outlined" onClick={() => mint.mutate(quantity)}>
+          <Button
+            disabled={disableMint}
+            variant="outlined"
+            onClick={() => mint.mutate({ gammiesToMint: quantity, currency })}
+          >
             {zeroSupply ? `Sold Out!` : mint.isLoading ? `Executing in Wallet...` : `Mint!`}
           </Button>
         </Box>
@@ -180,7 +213,13 @@ export const MintPage = () => {
               )}
               <Box display="flex" sx={{ fontSize: "20px" }}>
                 <Typography sx={{ marginRight: "3px " }}>
-                  {priceIsLoading || !price ? <Skeleton /> : ethers.utils.formatEther(price)}
+                  {priceIsLoading || !price ? (
+                    <Skeleton />
+                  ) : currency === "ETH" ? (
+                    ethers.utils.formatEther(price.eth)
+                  ) : (
+                    ethers.utils.formatEther(price.gohm)
+                  )}
                 </Typography>
                 <select onChange={e => changeCurrency(e.target.value as TCurrency)}>
                   <option>ETH</option>

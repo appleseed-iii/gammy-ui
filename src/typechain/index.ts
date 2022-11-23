@@ -2,5 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { GammyGrams } from "./GammyGrams";
+export type { IERC20 } from "./IERC20";
 export * as factories from "./factories";
 export { GammyGrams__factory } from "./factories/GammyGrams__factory";
+export { IERC20__factory } from "./factories/IERC20__factory";
