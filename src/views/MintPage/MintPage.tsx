@@ -186,9 +186,9 @@ export const MintPage = () => {
           <Box display="flex" justifyContent="center">
             <Box
               component="img"
-              sx={{ height: "340px", width: "340px", border: "1px solid #fff" }}
-              alt="placeholder."
-              src="https://bafkreidom2nqno4ra2xlzmtuzsy6fvjplloau6kfl2wm2b3msb2dpvtqpe.ipfs.nftstorage.link/"
+              sx={{ height: "400px", width: "350px", border: "1px solid #fff" }}
+              alt="placeholder"
+              src="https://nftstorage.link/ipfs/bafkreiephptwt3fkltqz4yydntnonoxpmj6kozl5ldmydydg5i3tfo5bqi"
             />
           </Box>
           <Box id="nft-mint-supply-row" display="flex" flexDirection="row" justifyContent="space-between">
