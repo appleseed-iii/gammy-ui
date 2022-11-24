@@ -256,10 +256,9 @@ export const MintPage = () => {
           <MintButton currency={currency} />
           <Box id="nft-details-row" display="flex" flexDirection="row" justifyContent="space-between">
             <blockquote style={{ maxWidth: "500px", background: "#dfdfdf", padding: "1em", margin: "0.2em" }}>
-              Each Gammy Gram is an actual email from Gammy or sometimes your other boomer family members. They just
-              want you to make it, anon.
+              Each Gammy Gram is an actual email from Gammy. She just wants you to make it, anon.
               <br />
-              Please forgive their spelling and grammar errors... they're boomers.
+              Please forgive her spelling and grammar errors... she's a boomer.
             </blockquote>
           </Box>
           <Groove sx={{ margin: "10px" }} />
