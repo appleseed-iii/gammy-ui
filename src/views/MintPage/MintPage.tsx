@@ -59,7 +59,7 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
         setTotalPrice(price.gohm.mul(priceQuantity));
       }
     }
-  }, [hasFreeMint, currency]);
+  }, [price, hasFreeMint, currency]);
 
   const [seconds, setSeconds] = useState(remainingSeconds);
   useEffect(() => {
