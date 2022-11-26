@@ -17,7 +17,7 @@
     "react-hot-toast": "^2.4.0",
     "react-router-dom": "^6.4.3",
     "sass": "^1.56.1",
-    "wagmi": "^0.8.5"
+    "wagmi": "^0.8.6"
   },
   "scripts": {
     "start": "vite",
