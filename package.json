@@ -62,7 +62,7 @@
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^8.0.2",
-    "lint-staged": "^13.0.3",
+    "lint-staged": "^13.0.4",
     "prettier": "^2.6.2",
     "rollup-plugin-polyfill-node": "^0.11.0",
     "typechain": "^8.1.1",
