@@ -15,7 +15,7 @@
     "react-dom": "^18.0.0",
     "react-hook-form": "^7.39.4",
     "react-hot-toast": "^2.4.0",
-    "react-router-dom": "^6.4.3",
+    "react-router-dom": "^6.4.5",
     "sass": "^1.56.1",
     "wagmi": "^0.8.5"
   },
