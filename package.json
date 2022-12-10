@@ -16,7 +16,7 @@
     "react-hook-form": "^7.39.4",
     "react-hot-toast": "^2.4.0",
     "react-router-dom": "^6.4.5",
-    "sass": "^1.56.1",
+    "sass": "^1.56.2",
     "wagmi": "^0.9.2"
   },
   "scripts": {
