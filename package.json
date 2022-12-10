@@ -13,7 +13,7 @@
     "ethers": "^5.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.39.4",
+    "react-hook-form": "^7.40.0",
     "react-hot-toast": "^2.4.0",
     "react-router-dom": "^6.4.5",
     "sass": "^1.56.1",
