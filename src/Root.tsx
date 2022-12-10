@@ -6,7 +6,8 @@ import { FC } from "react";
 import { BrowserRouter } from "react-router-dom";
 import App from "src/App";
 import theme from "src/styles/theme";
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { goerli, mainnet } from "wagmi/chains";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
@@ -17,11 +18,13 @@ import { publicProvider } from "wagmi/providers/public";
 
 export const { chains, provider } = configureChains(
   [
-    { ...chain.mainnet, rpcUrls: { default: "https://rpc.ankr.com/eth" } },
-    { ...chain.goerli, rpcUrls: { default: "https://rpc.ankr.com/eth_goerli" } },
+    { ...mainnet, rpcUrls: { default: { http: ["https://rpc.ankr.com/eth"] } } },
+    { ...goerli, rpcUrls: { default: { http: ["https://rpc.ankr.com/eth_goerli"] } } },
   ],
   [
-    jsonRpcProvider({ rpc: chain => ({ http: chain.rpcUrls.default }) }),
+    jsonRpcProvider({
+      rpc: chain => ({ http: chain.rpcUrls.default.http[0] }),
+    }),
     alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
     publicProvider(),
   ],

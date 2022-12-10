@@ -99,7 +99,7 @@ export const useGetRemainingSupply = () => {
 export const useCodeURL = () => {
   const { chain } = useNetwork();
   const { contract, onSupportedChain } = useGammyMinter();
-  if (!onSupportedChain) return "";
+  if (!onSupportedChain) return { data: "" };
 
   let url: string;
   if (chain?.id === 5) {

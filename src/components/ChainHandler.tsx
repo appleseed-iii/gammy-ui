@@ -1,7 +1,8 @@
-import { useNetwork } from "wagmi";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 
 const ChainHandler = () => {
-  const { activeChain, chains, error, isLoading, pendingChainId, switchNetwork } = useNetwork();
+  const { chain: activeChain } = useNetwork();
+  const { chains, error, isLoading, pendingChainId, switchNetwork } = useSwitchNetwork();
   console.log("ChainHandler", activeChain);
   return (
     <>
