@@ -10,10 +10,6 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 const CustomizedSnackbars = ({ severity, message }: { severity: AlertColor; message: string }) => {
   const [open, setOpen] = React.useState(true);
 
-  const handleClick = () => {
-    setOpen(true);
-  };
-
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
       return;
