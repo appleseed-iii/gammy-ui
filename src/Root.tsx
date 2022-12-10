@@ -18,11 +18,13 @@ import { publicProvider } from "wagmi/providers/public";
 
 export const { chains, provider } = configureChains(
   [
-    { ...mainnet, rpcUrls: { default: "https://rpc.ankr.com/eth" } },
-    { ...goerli, rpcUrls: { default: "https://rpc.ankr.com/eth_goerli" } },
+    { ...mainnet, rpcUrls: { default: { http: ["https://rpc.ankr.com/eth"] } } },
+    { ...goerli, rpcUrls: { default: { http: ["https://rpc.ankr.com/eth_goerli"] } } },
   ],
   [
-    jsonRpcProvider({ rpc: chain => ({ http: chain.rpcUrls.default }) }),
+    jsonRpcProvider({
+      rpc: chain => ({ http: chain.rpcUrls.default.http[0] }),
+    }),
     alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
     publicProvider(),
   ],
