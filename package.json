@@ -9,7 +9,7 @@
     "@mui/icons-material": "^5.10.16",
     "@mui/material": "^5.10.17",
     "@tanstack/react-query": "^4.16.1",
-    "caniuse-lite": "^1.0.30001434",
+    "caniuse-lite": "^1.0.30001439",
     "ethers": "^5.7.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
