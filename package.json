@@ -67,7 +67,7 @@
     "rollup-plugin-polyfill-node": "^0.11.0",
     "typechain": "^8.1.1",
     "typescript": "^4.9.3",
-    "vite": "^3.2.4",
+    "vite": "^3.2.5",
     "vite-plugin-svgr": "^2.2.2",
     "vite-tsconfig-paths": "^3.6.0"
   },
