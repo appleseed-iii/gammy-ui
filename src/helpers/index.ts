@@ -50,3 +50,34 @@ export function prettifySeconds(seconds: number, resolution?: string) {
 
   return result;
 }
+
+// Function to generate random number
+export const randomNumber = ({ min, max }: { min: number; max: number }) => {
+  return Math.floor(Math.random() * (max - min) + min);
+};
+
+/**
+ * Conserve aspect ratio of the original region. Useful when shrinking/enlarging
+ * images to fit into a certain area.
+ *
+ * @param {Number} srcWidth width of source image
+ * @param {Number} srcHeight height of source image
+ * @param {Number} maxWidth maximum available width
+ * @param {Number} maxHeight maximum available height
+ * @return {Object} { width, height }
+ */
+export const calculateAspectRatioFit = ({
+  srcWidth,
+  srcHeight,
+  maxWidth,
+  maxHeight,
+}: {
+  srcWidth: number;
+  srcHeight: number;
+  maxWidth: number;
+  maxHeight: number;
+}) => {
+  const ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+
+  return { width: srcWidth * ratio, height: srcHeight * ratio };
+};
