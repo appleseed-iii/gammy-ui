@@ -206,7 +206,7 @@ export const MintPage = () => {
         square
         sx={{ padding: "2px 2px 10px 2px", minWidth: "370px", alignSelf: "center" }}
       >
-        <HeaderBar message={`Buy Now`} />
+        <HeaderBar message={`Gammy Grams`} />
         <Box m={2} display="flex" flexDirection="column">
           <Box display="flex" justifyContent="center">
             {isRandomLoading || !initialRandomTokenId ? (
