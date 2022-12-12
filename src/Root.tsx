@@ -41,7 +41,6 @@ const wagmiClient = createClient({
       chains,
       options: {
         appName: "Gammy Grams",
-        jsonRpcUrl: `https://eth-mainnet.alchemyapi.io/v2/${import.meta.env.VITE_ALCHEMY_ID}`,
       },
     }),
     new WalletConnectConnector({

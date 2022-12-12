@@ -230,7 +230,6 @@ export const useMint = () => {
   const { data: signer } = useSigner();
   const { data: price } = useGetGammyPrice();
   const { data: hasFreeMint } = useHasFreeMint();
-  // TODO(appleseed): update ANY types below
   return useMutation<ethers.ContractReceipt, EthersError, { gammiesToMint: ethers.BigNumber; currency: TCurrency }>(
     async ({ gammiesToMint, currency }: { gammiesToMint: ethers.BigNumber; currency: TCurrency }) => {
       if (!signer) throw new Error(`Signer is not set`);
