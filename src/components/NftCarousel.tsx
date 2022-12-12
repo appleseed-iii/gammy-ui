@@ -36,7 +36,6 @@ const NftPager = ({ tokenId, setGetTokenId }: { tokenId: number; setGetTokenId: 
 
 export const NftCarousel = ({ initialRandomTokenId }: { initialRandomTokenId: number }) => {
   const [getTokenId, setGetTokenId] = useState<number>(initialRandomTokenId);
-  console.log("getTokenId", getTokenId);
   const {
     imgURL,
     aspectRatio,

@@ -79,7 +79,6 @@ export function ConnectButton() {
   // const handleOpenConnectWallet = () => setOpenConnectWallet(true);
   // const handleCloseConnectWallet = () => setOpenConnectWallet(false);
   const toggleDrawer = () => {
-    console.log("toggleDrawer", !openConnectWallet);
     setHideWarning(true);
     setOpenConnectWallet(!openConnectWallet);
   };
@@ -87,8 +86,6 @@ export function ConnectButton() {
     setHideWarning(false);
     connect({ connector });
   };
-
-  console.log("connectors", connectors);
 
   return (
     <>
@@ -172,30 +169,32 @@ export function ConnectButton() {
             )}
 
             {!isConnected &&
-              connectors.map(connector => (
-                <Box onClick={() => handleConnectBtn(connector)}>
-                  <ConnectorRowTC
-                    className=""
-                    // disabled={!connector.ready}
-                    key={connector.id}
-                    sx={{
-                      height: "40px",
-                      "&:hover": {
-                        backgroundColor: "#00007B",
-                        color: "#fff",
-                      },
-                      cursor: "pointer",
-                    }}
-                  >
-                    <Typography>
-                      {isMounted ? connector.name : connector.id === "injected" ? connector.id : connector.name}
-                      {isLoading && pendingConnector?.id === connector.id && " (connecting)"}
-                      {isMounted ? !connector.ready && " (use Wallet Connect)" : ""}
-                    </Typography>
-                  </ConnectorRowTC>
-                  <Groove sx={{ borderBottom: "2px groove" }} />
-                </Box>
-              ))}
+              connectors
+                .filter(i => i.ready) // since metamask doesn't work on mobile https://github.com/wagmi-dev/wagmi/discussions/802
+                .map(connector => (
+                  <Box onClick={() => handleConnectBtn(connector)}>
+                    <ConnectorRowTC
+                      className=""
+                      // disabled={!connector.ready}
+                      key={connector.id}
+                      sx={{
+                        height: "40px",
+                        "&:hover": {
+                          backgroundColor: "#00007B",
+                          color: "#fff",
+                        },
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Typography>
+                        {isMounted ? connector.name : connector.id === "injected" ? connector.id : connector.name}
+                        {isLoading && pendingConnector?.id === connector.id && " (connecting)"}
+                        {isMounted ? !connector.ready && " (use Wallet Connect)" : ""}
+                      </Typography>
+                    </ConnectorRowTC>
+                    <Groove sx={{ borderBottom: "2px groove" }} />
+                  </Box>
+                ))}
 
             {connectError && !hideWarning && (
               <WalletWarningTC>
