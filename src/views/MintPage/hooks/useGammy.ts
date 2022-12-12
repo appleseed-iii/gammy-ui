@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import axios, { AxiosResponse } from "axios";
 import { ethers } from "ethers";
 import toast from "react-hot-toast";
 import { EthersError, GAMMY_MINTER, GOHM_ADDRESSES } from "src/constants";
+import { calculateAspectRatioFit, randomNumber } from "src/helpers";
 import { useSupportedChain } from "src/hooks/useSupportedChain";
 import { GammyGrams__factory } from "src/typechain";
 import { IERC20__factory } from "src/typechain/factories/IERC20__factory";
@@ -9,12 +11,16 @@ import { useAccount, useMutation, useNetwork, useProvider, useQueryClient, useSi
 
 export type TCurrency = "ETH" | "gOHM";
 
-const useGammyMinter = () => {
+/** uses connected network unless overridden by a passed in a networkId */
+const useGammyMinter = (networkId?: number) => {
   const { chain = { id: 1 } } = useNetwork();
+  let chainId = chain?.id;
+  if (networkId) chainId = networkId;
+
   const onSupportedChain = useSupportedChain();
-  const mintAddress = GAMMY_MINTER[chain?.id] || "";
-  const gohmAddress = GOHM_ADDRESSES[chain?.id] || "";
-  const provider = useProvider();
+  const mintAddress = GAMMY_MINTER[chainId] || "";
+  const gohmAddress = GOHM_ADDRESSES[chainId] || "";
+  const provider = useProvider({ chainId });
   const contract = GammyGrams__factory.connect(mintAddress, provider);
   const gohmContract = IERC20__factory.connect(gohmAddress, provider);
   return { contract, onSupportedChain, gohmContract };
@@ -49,7 +55,7 @@ export const useGetGammyPrice = () => {
         gohm,
       };
     },
-    { enabled: onSupportedChain && !!chain && !!provider },
+    { enabled: onSupportedChain && !!chain && !!provider, cacheTime: 1000 * 60 * 20, staleTime: 1000 * 60 * 20 },
   );
 };
 
@@ -63,7 +69,7 @@ export const useGetMaxSupply = () => {
     async () => {
       return await contract.TOKEN_LIMIT();
     },
-    { enabled: onSupportedChain && !!chain && !!provider },
+    { enabled: onSupportedChain && !!chain && !!provider, cacheTime: Infinity, staleTime: Infinity },
   );
 };
 
@@ -123,7 +129,7 @@ export const useGetStartSaleTimestamp = () => {
       const timestamp = await contract.startSaleTimestamp();
       return Number(ethers.utils.formatUnits(timestamp, 0));
     },
-    { enabled: onSupportedChain && !!chain && !!provider },
+    { enabled: onSupportedChain && !!chain && !!provider, cacheTime: 1000 * 60 * 20, staleTime: 1000 * 60 * 20 },
   );
 };
 
@@ -269,5 +275,80 @@ export const useMint = () => {
         toast.success(`Successfully minted`);
       },
     },
+  );
+};
+
+export const useTokenUri = ({ tokenId, enabled }: { tokenId: number | ethers.BigNumber; enabled: boolean }) => {
+  const { chain = { id: 1 } } = useNetwork();
+  const { contract, onSupportedChain } = useGammyMinter();
+  const provider = useProvider();
+
+  return useQuery<string, Error>(
+    ["getTokenURI", chain.id, tokenId],
+    async () => {
+      return await contract.tokenURI(tokenId);
+    },
+    {
+      enabled: !!contract && onSupportedChain && !!chain && !!provider && enabled,
+      staleTime: 1000 * 60 * 20,
+    },
+  );
+};
+
+type TMetadata = {
+  name: string;
+  description: string;
+  image: string;
+  attributes: { [key: string]: string };
+};
+
+/**
+ * parses JSON Metadata conforming with ERC721
+ */
+export const useNftMetadata = ({ tokenId, enabled }: { tokenId: number | ethers.BigNumber; enabled: boolean }) => {
+  const { chain = { id: 1 } } = useNetwork();
+  const { data: tokenUri } = useTokenUri({ tokenId, enabled });
+
+  return useQuery<TMetadata | undefined, Error>(
+    ["getTokenMetadata", chain.id, tokenId],
+    async () => {
+      if (tokenUri) {
+        try {
+          const metadata: AxiosResponse = await axios.get(tokenUri, { withCredentials: false });
+          console.log("metadata", metadata);
+          return metadata?.data as TMetadata;
+        } catch (e) {
+          console.log("error", e);
+          throw e;
+        }
+      } else {
+        return;
+      }
+    },
+    { enabled: !!chain && !!tokenUri && enabled, staleTime: 1000 * 60 * 20 },
+  );
+};
+
+/** return a random image from the project... init with placeholder */
+export const useNftImage = ({ tokenId, enabled }: { tokenId: number | ethers.BigNumber; enabled: boolean }) => {
+  const { data: metadata, isLoading } = useNftMetadata({ tokenId, enabled });
+  const result = calculateAspectRatioFit({ srcWidth: 1170, srcHeight: 2120, maxWidth: 500, maxHeight: 400 });
+
+  return { imgURL: metadata?.image, aspectRatio: result, tokenId, isLoading };
+};
+
+export const useRandomTokenId = () => {
+  const { data: totalSupply, isFetched } = useGetTotalSupply();
+
+  return useQuery(
+    ["randomTokenId"],
+    async () => {
+      let randomTokenId: number | undefined;
+      if (totalSupply && totalSupply.gt(0)) {
+        randomTokenId = randomNumber({ min: 0, max: Number(totalSupply.toString()) - 1 });
+      }
+      return randomTokenId;
+    },
+    { enabled: !!totalSupply && isFetched, cacheTime: Infinity, staleTime: Infinity },
   );
 };

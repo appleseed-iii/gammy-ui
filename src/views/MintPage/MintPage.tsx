@@ -10,6 +10,7 @@ import { ReactComponent as gOHMImg } from "src/assets/gOHM.svg";
 import { ConnectButton } from "src/components/ConnectWallet";
 import { Groove } from "src/components/Groove";
 import { HeaderBar } from "src/components/HeaderBar";
+import { NftCarousel } from "src/components/NftCarousel";
 import { UserBalanceRow } from "src/components/UserBalanceRow";
 import { prettifySeconds } from "src/helpers";
 import { useInterval } from "src/hooks/useInterval";
@@ -25,6 +26,7 @@ import {
   useGetStartSaleTimestamp,
   useHasFreeMint,
   useMint,
+  useRandomTokenId,
   useRemainingSeconds,
 } from "src/views/MintPage/hooks/useGammy";
 import { useAccount } from "wagmi";
@@ -185,7 +187,6 @@ const MintButton = ({ currency }: { currency: TCurrency }) => {
 
 export const MintPage = () => {
   const { data: codeURL } = useCodeURL();
-  const { address, isConnected } = useAccount();
   const [currency, setCurrency] = useState<TCurrency>("ETH");
   const { data: price, isLoading: priceIsLoading } = useGetGammyPrice();
   const { data: remainingSupply, isLoading: isRemainingLoading } = useGetRemainingSupply();
@@ -194,6 +195,7 @@ export const MintPage = () => {
     console.log("changed to", currency);
     setCurrency(currency);
   };
+  const { data: initialRandomTokenId, isLoading: isRandomLoading } = useRandomTokenId();
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="center">
@@ -207,12 +209,11 @@ export const MintPage = () => {
         <HeaderBar message={`Buy Now`} />
         <Box m={2} display="flex" flexDirection="column">
           <Box display="flex" justifyContent="center">
-            <Box
-              component="img"
-              sx={{ height: "400px", width: "350px", border: "1px solid #fff" }}
-              alt="placeholder"
-              src="https://nftstorage.link/ipfs/bafkreiephptwt3fkltqz4yydntnonoxpmj6kozl5ldmydydg5i3tfo5bqi"
-            />
+            {isRandomLoading || !initialRandomTokenId ? (
+              <NftCarousel initialRandomTokenId={0} />
+            ) : (
+              <NftCarousel initialRandomTokenId={initialRandomTokenId} />
+            )}
           </Box>
           <Box id="nft-mint-supply-row" display="flex" flexDirection="row" justifyContent="space-between">
             <Typography>Remaining / Supply</Typography>
