@@ -16,7 +16,7 @@
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
     "react-router-dom": "^6.4.5",
-    "sass": "^1.56.2",
+    "sass": "^1.58.0",
     "wagmi": "^0.9.2"
   },
   "scripts": {
