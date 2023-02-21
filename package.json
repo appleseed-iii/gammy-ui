@@ -6,7 +6,7 @@
     "98.css": "^0.1.18",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@mui/icons-material": "^5.10.16",
+    "@mui/icons-material": "^5.11.9",
     "@mui/material": "^5.10.17",
     "@tanstack/react-query": "^4.16.1",
     "axios": "^1.2.1",
